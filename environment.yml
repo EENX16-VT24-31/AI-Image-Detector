@@ -1,0 +1,9 @@
+name: KandidatENV
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch
+  - numpy
+  - pandas
+prefix: /home/erwinia/miniconda3/envs/KandidatENV
