@@ -6,4 +6,5 @@ dependencies:
   - pytorch
   - numpy
   - pandas
+  - mypy
 prefix: /home/erwinia/miniconda3/envs/KandidatENV
