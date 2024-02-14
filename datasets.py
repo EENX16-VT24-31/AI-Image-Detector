@@ -9,7 +9,7 @@ path_to_test_images: str = os.path.join(dir_path, r'data\Dataset-Mini\test')
 path_to_train_images: str = os.path.join(dir_path, r'data\Dataset-Mini\train')
 
 # batch size
-BATCH_SIZE = 1
+BATCH_SIZE = 64
 
 # the training transforms
 train_transform = transforms.Compose([
@@ -48,11 +48,9 @@ test_dataset = datasets.ImageFolder(
     )
 
 
-
 # training data loaders
 train_loader = DataLoader(
-    train_dataset, batch_size=BATCH_SIZE, shuffle=True,
-    num_workers=4, pin_memory=True
+    train_dataset, batch_size=BATCH_SIZE, shuffle=True, pin_memory=True
 )
 
 # testing data loaders
