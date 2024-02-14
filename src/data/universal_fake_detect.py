@@ -13,7 +13,8 @@ class Datasets:
     """
     def __init__(self, base_path: str, split: tuple[float, float, float],
                  batch_size: int = 32, num_workers: int | None = os.cpu_count(),
-                 rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5), rgb_std: tuple[float, float, float] = (0.5, 0.5, 0.5)):
+                 rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
+                 rgb_std: tuple[float, float, float] = (0.5, 0.5, 0.5)):
         assert sum(split) == 1 and len(split) == 3, "The split parameter should be a list with 3 parameters, summing " \
                                                     "to 1 "
 
@@ -64,7 +65,7 @@ class Datasets:
 
 # Example Usage
 if __name__ == "__main__":
-    base_path: str = "I:\progan_train"
+    base_path: str = "/media/erwinia/T9/progan_train"
     split: tuple[float, float, float] = (0.8, 0.1, 0.1)
     dataset: Datasets = Datasets(base_path, split)
 
