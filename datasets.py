@@ -55,7 +55,6 @@ train_loader = DataLoader(
 
 # testing data loaders
 test_loader = DataLoader(
-    test_dataset, batch_size=BATCH_SIZE, shuffle=False,
-    num_workers=4, pin_memory=True
+    test_dataset, batch_size=BATCH_SIZE, shuffle=False, pin_memory=True
 )
 
