@@ -48,7 +48,7 @@ net = Net()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-# Träna modellen 
+# Träna modellen
 for epoch in range(2):  # loopa över datasetet flera gånger
 
     running_loss = 0.0
