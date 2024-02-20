@@ -15,7 +15,7 @@ def main():
     vit_model_test.test_model(
                             model=model,
                             test_loader=test_loader,
-                            saved_model_path='trained_model.pth', 
+                            saved_model_path='trained_model.pth',
                             criterion=criterion
                             )
 
