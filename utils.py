@@ -1,6 +1,6 @@
-import torch 
+import torch
 
-def save_model(epochs : int, model, optimizer, criterion, output_path):
+def save_model(epochs : int, model, optimizer, criterion, output_path : str):
     """
     Function to save the trained model to disk.
     """
@@ -10,7 +10,6 @@ def save_model(epochs : int, model, optimizer, criterion, output_path):
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': criterion,
                 }, output_path)
-    
 
 def parameter_info(model, printing : bool=True):
     """

@@ -1,9 +1,5 @@
-
-import torch
 import torch.optim as optim
 from utils import save_model
-
-
 
 def train_model(model, train_loader, criterion, epochs : int, lr):
 

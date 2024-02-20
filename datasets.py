@@ -37,13 +37,13 @@ test_transform = transforms.Compose([
 
 # training dataset
 train_dataset = datasets.ImageFolder(
-    root=path_to_train_images, 
+    root=path_to_train_images,
     transform=train_transform
     )
 
 # test dataset
 test_dataset = datasets.ImageFolder(
-    path_to_test_images, 
+    path_to_test_images,
     transform=test_transform
     )
 
