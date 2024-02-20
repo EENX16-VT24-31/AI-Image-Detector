@@ -69,6 +69,8 @@ if __name__ == "__main__":
     i: int
     image: torch.Tensor
     label: torch.Tensor
+    mean: float
+    std: float
 
     print("Training Labels:")
     for i, (image, label) in enumerate(dataset.training):
@@ -78,7 +80,7 @@ if __name__ == "__main__":
         if i == 10:
             break
 
-    ImageStatistics.calculate_mean(ImageStatistics.self)
+    mean = ImageStatistics.calculate_mean(ImageStatistics.self)
 
     for i, (image, label) in enumerate(dataset.training):
         image = image / 2 + 0.5 #unnormalize
@@ -87,4 +89,4 @@ if __name__ == "__main__":
         if i == 10:
             break
     
-    ImageStatistics.calculate_std(ImageStatistics.self)
+    std = ImageStatistics.calculate_std(ImageStatistics.self)
