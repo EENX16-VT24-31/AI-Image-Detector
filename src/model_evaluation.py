@@ -3,6 +3,9 @@ import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
+import torch.utils.data
+from torch.utils.data import Dataset, DataLoader 
+from torchvision import datasets
 import torch.optim as optim
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -13,12 +16,14 @@ transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-# Ladda CIFAR10-datasetet och definiera laddare för träning och test
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=False, transform=transform) #download=True
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=4, shuffle=True, num_workers=2)
 
-testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=False, transform=transform) #download=True
-testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False, num_workers=2)
+# Ladda CIFAR10-datasetet och definiera laddare för träning och test
+trainset1 = torch.utils.data.Dataset()
+trainset = torchvision.datasets.CIFAR10(root='.\eval_data', train=True, download=False, transform=transform) #download=True
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=4, shuffle=True)
+
+testset = torchvision.datasets.CIFAR10(root='.\eval_data', train=False, download=False, transform=transform) #download=True,  root = './data'
+testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False)
 
 # Definiera klasserna i CIFAR10
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -46,18 +51,18 @@ class Net(nn.Module):
 # Skapa en instans av modellen och definiera förlustfunktion och optimerare
 net = Net()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.01) # lr=0.001, momentum=0.9)
 
 # Träna modellen
-for epoch in range(2):  # loopa över datasetet flera gånger
+for epoch in range(5):  # loopa över datasetet flera gånger
 
     running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    for i, data in enumerate(trainloader):
         # få inputs; data är en lista av [inputs, labels]
         inputs, labels = data
 
         # nollställa parametrarna för gradienten
-        optimizer.zero_grad()
+        #optimizer.zero_grad()
 
         # framåtpassning + bakåtpassning + optimering
         outputs = net(inputs)
@@ -65,10 +70,13 @@ for epoch in range(2):  # loopa över datasetet flera gånger
         loss.backward()
         optimizer.step()
 
+        # nollställa parametrarna för gradienten
+        optimizer.zero_grad()
+
         # skriv ut statistik
         running_loss += loss.item()
         if i % 2000 == 1999:    # skriv ut var 2000 minibatches
-            print('[%d, %5d] loss: %.3f' %
+            print('Epoch %d, iteration %5d, loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
@@ -95,3 +103,4 @@ print(conf_matrix)
 # Calculate Accuracy
 accuracy = np.trace(conf_matrix) / np.sum(conf_matrix)
 print("Accuracy:", accuracy)
+
