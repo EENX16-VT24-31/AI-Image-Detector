@@ -50,18 +50,19 @@ class Datasets:
         val_size: int = int(self.split[1] * self.image_count)
         test_size: int = self.image_count - train_size - val_size
 
-        train_set: Subset
-        val_set: Subset
-        test_set: Subset
-        train_set, val_set, test_set = random_split(images, [train_size, test_size, val_size])
+        self.train_set: Subset
+        self.val_set: Subset
+        self.test_set: Subset
+        self.train_set, self.val_set, self.test_set = random_split(images, [train_size, val_size, test_size])
 
-        self.training: DataLoader = \
-            DataLoader(train_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        self.validation: DataLoader \
-            = DataLoader(val_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
-        self.testing: DataLoader \
-            = DataLoader(test_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+    def training(self):
+        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
+    def validation(self):
+        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+
+    def testing(self):
+        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
 # Example Usage
 if __name__ == "__main__":
