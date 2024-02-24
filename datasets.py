@@ -1,60 +1,45 @@
 import os
+from typing import List, Tuple
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torch.utils.data import DataLoader
 
 
-dir_path: str = os.path.dirname(os.path.realpath(__file__))
-path_to_test_images: str = os.path.join(dir_path, r'data\Dataset-Mini\test')
-path_to_train_images: str = os.path.join(dir_path, r'data\Dataset-Mini\train')
 
-# batch size
-BATCH_SIZE = 64
 
-# the training transforms
-train_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.RandomHorizontalFlip(p=0.5),
-    transforms.RandomVerticalFlip(p=0.5),
-    transforms.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5)),
-    transforms.RandomRotation(degrees=(30, 70)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.5, 0.5, 0.5],
-        std=[0.5, 0.5, 0.5]
-    )
-])
+def create_dataloaders(train_path: str,
+                       test_path: str,
+                       val_path: str,
+                       transform: transforms.Compose,
+                       batch_size: int,
+                       num_workers: int) -> Tuple[DataLoader, DataLoader, DataLoader, List[str]]:
 
-# the testing transforms
-test_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.5, 0.5, 0.5],
-        std=[0.5, 0.5, 0.5]
-    )
-])
+    dir_path: str = os.path.dirname(os.path.realpath(__file__))
+    path_to_test_images: str = os.path.join(dir_path, test_path)
+    path_to_validate_images: str = os.path.join(dir_path, val_path)
+    path_to_train_images: str = os.path.join(dir_path, train_path)
+   
+    # Creating the datasets
+    train_data = datasets.ImageFolder(root=path_to_train_images, transform=transform)
+    validate_data = datasets.ImageFolder(root=path_to_validate_images, transform=transform)
+    test_data = datasets.ImageFolder(path_to_test_images, transform=transform)
+    
+    class_names = train_data.classes
 
-# training dataset
-train_dataset = datasets.ImageFolder(
-    root=path_to_train_images,
-    transform=train_transform
+    # training data loaders
+    train_loader = DataLoader(
+        train_data, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True
     )
 
-# test dataset
-test_dataset = datasets.ImageFolder(
-    path_to_test_images,
-    transform=test_transform
+    # validate data loaders
+    val_loader = DataLoader(
+        validate_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True
     )
 
+    # testing data loaders
+    test_loader = DataLoader(
+        test_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True
+    )
 
-# training data loaders
-train_loader = DataLoader(
-    train_dataset, batch_size=BATCH_SIZE, shuffle=True, pin_memory=True
-)
-
-# testing data loaders
-test_loader = DataLoader(
-    test_dataset, batch_size=BATCH_SIZE, shuffle=False, pin_memory=True
-)
+    return train_loader, val_loader, test_loader, class_names
 
