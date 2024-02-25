@@ -11,6 +11,7 @@ class Datasets:
     training, validation and testing dataset, weighted according to the split argument. The transform for the images is
     a random crop of size 224x224, random flips horizontally and vertically, as well as normalization.
     """
+
     def __init__(self, base_path: str, split: tuple[float, float, float],
                  batch_size: int = 32, num_workers: int | None = os.cpu_count(),
                  rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
@@ -33,7 +34,7 @@ class Datasets:
 
         transform: transforms.Compose = transforms.Compose([
             transforms.ToTensor(),
-            transforms.RandomCrop(self.image_size, pad_if_needed=True, padding_mode="reflect"),
+            transforms.RandomCrop(self.image_size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
             transforms.Normalize(self.rgb_mean, self.rgb_std)
@@ -50,17 +51,17 @@ class Datasets:
         val_size: int = int(self.split[1] * self.image_count)
         test_size: int = self.image_count - train_size - val_size
 
-        train_set: Subset
-        val_set: Subset
-        test_set: Subset
-        train_set, val_set, test_set = random_split(images, [train_size, test_size, val_size])
+        self.train_set: Subset
+        self.val_set: Subset
+        self.test_set: Subset
+        self.train_set, self.val_set, self.test_set = random_split(images, [train_size, val_size, test_size])
 
-        self.training: DataLoader = \
-            DataLoader(train_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        self.validation: DataLoader \
-            = DataLoader(val_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
-        self.testing: DataLoader \
-            = DataLoader(test_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+        self.training: DataLoader = DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True,
+                                               num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
+        self.validation: DataLoader = DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False,
+                                                 num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
+        self.testing: DataLoader = DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False,
+                                              num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
 
 
 # Example Usage
