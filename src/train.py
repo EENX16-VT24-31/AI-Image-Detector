@@ -1,9 +1,9 @@
 # Training script
 
 import torch
-import torchvision
+import torchvision  # type: ignore
 from torch.utils.data import DataLoader
-from torchvision.transforms import v2
+from torchvision.transforms import v2  # type: ignore
 from config import LEARNING_RATE, BATCH_SIZE, EPOCHS
 
 from model import BinaryResNet50NotPreTrained
@@ -54,7 +54,7 @@ for epoch_index in range(EPOCHS):
             print("batch {} loss: {}".format(i + 1, running_loss / (i + 1)))
             tb_x = epoch_index * len(train_loader) + i + 1
             # tb_writer.add_scalar("Loss/train", train_loss, tb_x)
-    train_loss = running_loss / len(train_loader.dataset)
+    train_loss = running_loss / float(len(train_loader.dataset))  # type: ignore[arg-type]
 
     # Evaluation
     model.eval()
@@ -66,7 +66,7 @@ for epoch_index in range(EPOCHS):
         loss = loss_fn(outputs, labels)
         running_loss += loss.item()
 
-    avg_val_loss = running_loss / len(val_loader.dataset)
+    avg_val_loss: float = running_loss / float(len(val_loader.dataset))  # type: ignore[arg-type]
     if avg_val_loss < best_eval_loss:
         best_eval_loss = avg_val_loss
         torch.save(model.state_dict(), "./model/resnet50model.pth")
