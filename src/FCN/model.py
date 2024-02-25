@@ -20,7 +20,7 @@ class FCN_test(nn.Module):
 class FCN_resnet50(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', pretrained=False)
+        self.model = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', weights=None)
         self.model.classifier[4] = nn.Conv2d(512, 1, kernel_size=1, stride=1)
 
     def forward(self, x):

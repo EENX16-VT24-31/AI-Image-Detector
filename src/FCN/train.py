@@ -1,52 +1,42 @@
 # Training script
-import sys
-
 import torch
-from torch.utils.data import DataLoader, random_split
-from torchvision.transforms import v2
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-
 from src.FCN.model import FCN_test, FCN_resnet50
-from src.config import LEARNING_RATE, BATCH_SIZE, EPOCHS
+from src.FCN.config import LEARNING_RATE, BATCH_SIZE, EPOCHS, UFD_PATH
 from src.data import universal_fake_detect
 
-
-
-# from torch.utils.tensorboard import SummaryWriter
 if __name__ == "__main__":
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # Enable freeze support for multithreading on Windows, has no effect in other operating systems
+    from multiprocessing import freeze_support
+    freeze_support()
 
-    model = FCN_resnet50().to(device)
+    device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
-    loss_fn = torch.nn.MSELoss().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    model: FCN_resnet50 = FCN_resnet50().to(device)
 
-    transforms = v2.Compose(
-        [
-            v2.RandomResizedCrop(size=(224, 224), antialias=True),
-            v2.RandomHorizontalFlip(p=0.5),
-            v2.ToTensor(),
-            # v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
+    optimizer: torch.optim.Adam = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
+    datasets: universal_fake_detect.Datasets = \
+        universal_fake_detect.Datasets(UFD_PATH, (0.4, 0.05, 0.55), batch_size=BATCH_SIZE)
 
-    datasets = universal_fake_detect.Datasets("C://Users//erwinia//Documents//progan_train", (0.02, 0.02, 0.96))
-    train_loader = datasets.training()
-    val_loader = datasets.validation()
+    train_loader: DataLoader = datasets.training
+    val_loader: DataLoader = datasets.validation
 
-    # tb_writer = SummaryWriter()
+    best_eval_loss: float = float("inf")
 
-    best_eval_loss = float("inf")
+    for epoch_index in range(EPOCHS):
+        model.train()
+        running_loss: float = 0.0
 
-    for epoch_index in range(10):
-        model.train(True)
-        running_loss = 0.0
-        train_loss = 0.0
+        inputs: torch.Tensor
+        labels: torch.Tensor
+        outputs: torch.Tensor
+        loss: torch.Tensor
 
-
-        for i, (inputs, labels) in tqdm(enumerate(train_loader)):
+        for inputs, labels in tqdm(train_loader, f"Training Network, Epoch {epoch_index+1}"):
             labels = labels.view(-1, 1, 1, 1).expand(-1, 1, 224, 224).float()
             inputs, labels = inputs.to(device), labels.to(device)
 
@@ -57,32 +47,28 @@ if __name__ == "__main__":
             optimizer.step()
 
             running_loss += loss.item()
-            if i % 1000 == 9:
-                print("  batch {} loss: {}".format(i + 1, running_loss/(i+1)))
-                tb_x = epoch_index * len(train_loader) + i + 1
-                # tb_writer.add_scalar("Loss/train", train_loss, tb_x)
-        train_loss = running_loss / len(train_loader)
-        print("Training loss", train_loss)
+        avg_train_loss: float = running_loss / len(train_loader)
+        print("Training loss", avg_train_loss, end="\n\n")
 
         # Evaluation
-        model.eval()
         running_loss = 0.0
+        model.eval()
 
-        for i, (inputs, labels) in tqdm(enumerate(val_loader)):
+        for inputs, labels in tqdm(val_loader, f"Evaluating Network "):
             labels = labels.view(-1, 1, 1, 1).expand(-1, 1, 224, 224).float()
             inputs, labels = inputs.to(device), labels.to(device)
+
+            optimizer.zero_grad()
             outputs = model(inputs)
             loss = loss_fn(outputs, labels)
+            loss.backward()  # It might seem like this line does nothing, but performance is much better with it
+
             running_loss += loss.item()
 
-        avg_val_loss = running_loss / len(val_loader)
-        print("Validation loss:", avg_val_loss)
+        avg_val_loss: float = running_loss / len(val_loader)
+        print("Validation loss:", avg_val_loss, end="\n\n")
         if avg_val_loss < best_eval_loss:
             best_eval_loss = avg_val_loss
             torch.save(model.state_dict(), "../../model/FCN_test_model.pth")
-        # tb_writer.add_scalars(
-        #     "Training vs. Validation Loss", {"Training": train_loss, "Validation": avg_val_loss}, epoch_index + 1
-        # )
-        # tb_writer.flush()
 
     print("finished training")

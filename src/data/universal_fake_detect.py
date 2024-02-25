@@ -11,6 +11,7 @@ class Datasets:
     training, validation and testing dataset, weighted according to the split argument. The transform for the images is
     a random crop of size 224x224, random flips horizontally and vertically, as well as normalization.
     """
+
     def __init__(self, base_path: str, split: tuple[float, float, float],
                  batch_size: int = 32, num_workers: int | None = os.cpu_count(),
                  rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
@@ -33,7 +34,7 @@ class Datasets:
 
         transform: transforms.Compose = transforms.Compose([
             transforms.ToTensor(),
-            transforms.RandomCrop(self.image_size, pad_if_needed=True, padding_mode="reflect"),
+            transforms.RandomCrop(self.image_size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
             transforms.Normalize(self.rgb_mean, self.rgb_std)
@@ -55,14 +56,13 @@ class Datasets:
         self.test_set: Subset
         self.train_set, self.val_set, self.test_set = random_split(images, [train_size, val_size, test_size])
 
-    def training(self):
-        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.training: DataLoader = DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True,
+                                               num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
+        self.validation: DataLoader = DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False,
+                                                 num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
+        self.testing: DataLoader = DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False,
+                                              num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
 
-    def validation(self):
-        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
-
-    def testing(self):
-        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
 # Example Usage
 if __name__ == "__main__":
