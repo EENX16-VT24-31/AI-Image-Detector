@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from src.FCN.model import FCN_test, FCN_resnet50
+from src.FCN.model import FCN_resnet50
 from src.FCN.config import LEARNING_RATE, BATCH_SIZE, EPOCHS, UFD_PATH
 from src.data import universal_fake_detect
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         running_loss = 0.0
         model.eval()
 
-        for inputs, labels in tqdm(val_loader, f"Evaluating Network "):
+        for inputs, labels in tqdm(val_loader, f"Evaluating Network, Epoch {epoch_index + 1}"):
             labels = labels.view(-1, 1, 1, 1).expand(-1, 1, 224, 224).float()
             inputs, labels = inputs.to(device), labels.to(device)
 
