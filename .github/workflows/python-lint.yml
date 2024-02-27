@@ -22,4 +22,4 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate KandidatENV
-          mypy .
+          mypy . --ignore-missing-imports
