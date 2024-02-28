@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.FCN.model import FCN_resnet50
-from src.FCN.config import LEARNING_RATE, BATCH_SIZE, EPOCHS, DATA_PATH
+from src.FCN.config import LEARNING_RATE, EPOCHS, DATA_PATH
 from src.data import gen_image
 
 if __name__ == "__main__":
