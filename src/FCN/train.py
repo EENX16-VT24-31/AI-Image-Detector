@@ -4,8 +4,8 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.FCN.model import FCN_resnet50
-from src.FCN.config import LEARNING_RATE, BATCH_SIZE, EPOCHS, UFD_PATH
-from src.data import universal_fake_detect
+from src.FCN.config import LEARNING_RATE, BATCH_SIZE, EPOCHS, DATA_PATH
+from src.data import gen_image
 
 if __name__ == "__main__":
     # Enable freeze support for multithreading on Windows, has no effect in other operating systems
@@ -19,8 +19,8 @@ if __name__ == "__main__":
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     optimizer: torch.optim.Adam = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    datasets: universal_fake_detect.Datasets = \
-        universal_fake_detect.Datasets(UFD_PATH, (0.4, 0.05, 0.55), batch_size=BATCH_SIZE)
+    datasets: gen_image.Datasets = \
+        gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4])
 
     train_loader: DataLoader = datasets.training
     val_loader: DataLoader = datasets.validation

@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c91d05d-5df2-4fbf-96e8-1567ab56c6e0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/FCN/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FCN/model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FCN/train.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/corrupt.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/gen_image.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/universal_fake_detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/universal_fake_detect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FCN/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/FCN/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FCN/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/FCN/train.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +40,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/erwinia/PycharmProjects/AI-Image-Detector/Dataset-Mini/1_fake&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/erwinia/PycharmProjects/AI-Image-Detector/src/FCN&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -49,6 +49,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\erwinia\PycharmProjects\AI-Image-Detector\src\FCN" />
       <recent name="C:\Users\erwinia\PycharmProjects\AI-Image-Detector\Dataset-Mini\1_fake" />
       <recent name="C:\Users\erwinia\PycharmProjects\AI-Image-Detector\Dataset-Mini\0_real" />
     </key>
@@ -57,6 +58,28 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.train">
+    <configuration name="gen_image" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AI-Image-Detector" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/data" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/data/gen_image.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="generator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AI-Image-Detector" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -148,6 +171,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.train" />
+        <item itemvalue="Python.gen_image" />
         <item itemvalue="Python.model" />
         <item itemvalue="Python.universal_fake_detect" />
         <item itemvalue="Python.generator" />
@@ -170,7 +194,9 @@
       <workItem from="1708093859395" duration="1202000" />
       <workItem from="1708095483653" duration="6892000" />
       <workItem from="1708501507188" duration="568000" />
-      <workItem from="1708520169755" duration="3011000" />
+      <workItem from="1708520169755" duration="18106000" />
+      <workItem from="1708851215003" duration="3855000" />
+      <workItem from="1709111000335" duration="5187000" />
     </task>
     <servers />
   </component>
@@ -193,19 +219,15 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/FCN/train.py</url>
-          <line>70</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/FCN/train.py</url>
-          <line>48</line>
-          <option name="timeStamp" value="6" />
+          <line>39</line>
+          <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AI_Image_Detector$train.coverage" NAME="train Coverage Results" MODIFIED="1708522731397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/FCN" />
+    <SUITE FILE_PATH="coverage/AI_Image_Detector$gen_image.coverage" NAME="gen_image Coverage Results" MODIFIED="1709114448224" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/data" />
+    <SUITE FILE_PATH="coverage/AI_Image_Detector$train.coverage" NAME="train Coverage Results" MODIFIED="1709116452329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/FCN" />
     <SUITE FILE_PATH="coverage/AI_Image_Detector$model.coverage" NAME="model Coverage Results" MODIFIED="1708072187320" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/FCN" />
     <SUITE FILE_PATH="coverage/AI_Image_Detector$generator.coverage" NAME="generator Coverage Results" MODIFIED="1707320453358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
     <SUITE FILE_PATH="coverage/AI_Image_Detector$universal_fake_detect.coverage" NAME="universal_fake_detect Coverage Results" MODIFIED="1707827442008" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/data" />
