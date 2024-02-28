@@ -44,7 +44,7 @@ class Datasets:
                  batch_size: int = 32, num_workers: int | None = os.cpu_count(),
                  rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
                  rgb_std: tuple[float, float, float] = (0.5, 0.5, 0.5),
-                 generators=None, transform=None):
+                 generators: list[Generator] | None = None, transform: transforms.Compose | None = None):
 
         if generators is None:
             generators = [Generator.ALL]
@@ -66,7 +66,7 @@ class Datasets:
         self.rgb_std: tuple[float, float, float] = rgb_std
 
         if transform is None:
-            transform: transforms.Compose = transforms.Compose([
+            transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.RandomCrop(self.image_size, pad_if_needed=True),
                 transforms.RandomHorizontalFlip(),
