@@ -25,9 +25,9 @@ print("model instance and target created")
 
 # preprocess input image, get the input image tensor
 img = np.array(PIL.Image.open('<path_to_image>'))
-img = cv2.resize(img, (224,224))
-img = (np.float32(img) / 255).astype(np.float32)
-input_tensor = preprocess_image(img)
+img_resized = cv2.resize(img, (224,224))
+img_processed = np.float32(img_resized) / 255
+input_tensor = preprocess_image(img_processed)
 
 print("image loaded")
 
