@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c91d05d-5df2-4fbf-96e8-1567ab56c6e0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/environment.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CAM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/environment.yml" beforeDir="false" afterPath="$PROJECT_DIR$/environment.yml" afterDir="false" />
-    </list>
+    <list default="true" id="1c91d05d-5df2-4fbf-96e8-1567ab56c6e0" name="Changes" comment="created a ClassActivationMap" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -202,6 +197,14 @@
       <workItem from="1708851215003" duration="3855000" />
       <workItem from="1709111000335" duration="5187000" />
     </task>
+    <task id="LOCAL-00001" summary="created a ClassActivationMap">
+      <created>1709224330098</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1709224330098</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -221,6 +224,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="created a ClassActivationMap" />
+    <option name="LAST_COMMIT_MESSAGE" value="created a ClassActivationMap" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
