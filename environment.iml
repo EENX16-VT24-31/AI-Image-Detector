@@ -1,0 +1,16 @@
+name: base
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - conda==24.1.2
+  - setuptools
+  - pip
+  - wheel
+  - conda-content-trust
+  - conda-libmamba-solver
+  - menuinst
+  - console_shortcut_miniconda
+  - powershell_shortcut_miniconda
+  - conda-forge::grad-cam
+prefix: C:\Users\ololi\miniconda3
