@@ -2,9 +2,10 @@
 import torch
 from sklearn.metrics import accuracy_score
 
-def test_model(model, test_loader, saved_model_path, criterion):
+def validate(model, val_loader, criterion, saved_model_path=None):
     # Load the trained parameters
-    model.load_state_dict(torch.load(saved_model_path)['model_state_dict'])
+    if saved_model_path:
+        model.load_state_dict(torch.load(saved_model_path)['model_state_dict'])
 
     # Set the model to evaluation mode
     model.eval()
@@ -17,7 +18,7 @@ def test_model(model, test_loader, saved_model_path, criterion):
     all_targets = []
 
     with torch.no_grad():
-        for inputs, targets in test_loader:
+        for inputs, targets in val_loader:
             outputs = model(inputs)
             loss = criterion(outputs, targets)
             test_loss += loss.item() * inputs.size(0)  # Accumulate the test loss
@@ -27,7 +28,7 @@ def test_model(model, test_loader, saved_model_path, criterion):
             all_targets.extend(targets.cpu().numpy())
 
     # Calculate the average test loss
-    test_loss /= len(test_loader.dataset)
+    test_loss /= len(val_loader.dataset)
     print(f"Test Loss: {test_loss:.4f}")
 
     # Calculate accuracy
