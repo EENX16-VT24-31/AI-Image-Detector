@@ -1,6 +1,7 @@
 import torch.hub
 from torch import nn
 import torch.nn.functional as F
+from torchvision.models.segmentation import FCN
 
 class FCN_test(nn.Module):
     def __init__(self):
@@ -18,10 +19,14 @@ class FCN_test(nn.Module):
         return x
 
 class FCN_resnet50(nn.Module):
-    def __init__(self):
+    def __init__(self, pretrained=False):
         super().__init__()
-        self.model = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', weights=None)
+        self.model: FCN = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', weights="DEFAULT")
         self.model.classifier[4] = nn.Conv2d(512, 1, kernel_size=1, stride=1)
+        if pretrained:
+            pretrained_data = torch.load("../../model/FCN_test_model.pth")
+            weights = {key.replace("model.", ""): val for key, val in pretrained_data.items()}
+            self.model.load_state_dict(weights)
 
     def forward(self, x):
         return F.sigmoid(self.model(x)["out"])
