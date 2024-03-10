@@ -14,9 +14,9 @@ val_size: int= 100
 weight_decay: float= 0.03
 
 def train_test(train_path: str,
-                         val_path: str,
-                         val_ai_path: str,
-                         val_nature_path: str) -> None:
+               val_path: str,
+               val_ai_path: str,
+               val_nature_path: str) -> None:
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -69,7 +69,7 @@ def train_test(train_path: str,
             model=vit,
             device=device)
 
-# Example usage of train_test_vit
+# Example usage of train_test
 if __name__ == "__main__":
 
     train_path: str=r'C:\Users\maxsj\imagenet_ai_0419_vqdm\train'
