@@ -1,6 +1,6 @@
 # import torch.optim as optim
 from typing import Tuple
-from utils import save_model
+#from utils import save_model
 import torch
 from tqdm import tqdm
 from sklearn.metrics import accuracy_score
