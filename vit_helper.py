@@ -1,30 +1,42 @@
 # import torch.optim as optim
 from typing import Tuple
-from matplotlib import pyplot as plt
-import numpy as np
 from utils import save_model
 import torch
 from tqdm import tqdm
-from PIL import Image
-import torchvision.transforms as transforms
 from sklearn.metrics import accuracy_score
 
 
-def _train_step(model: torch.nn.Module, 
-               dataloader: torch.utils.data.DataLoader, 
-               loss_fn: torch.nn.Module, 
+def _train_step(model: torch.nn.Module,
+               dataloader: torch.utils.data.DataLoader,
+               criterion: torch.nn.Module,
                optimizer: torch.optim.Optimizer,
-               device: torch.device) -> Tuple[float, float]:
-    
-    model.train()
-    train_loss, train_acc = 0, 0
+               device: str) -> Tuple[float, float]:
 
-    for batch, (X, y) in enumerate(tqdm(dataloader, f"Training Network")):
+    """
+    Function that calculates the loss and acc for one epoch on the training data.
+
+    Args:
+        model (torch.nn.Module): The model to train.
+        dataloader (torch.utils.data.DataLoader): The DataLoader to train with.
+        criterion (torch.nn.Module): The function that calculates the loss and backpropagation.
+        optimizer (torch.optim.Optimizer): The function that calculates the gradient.
+        device (str): The device used by torch.
+
+    Returns:
+        train_loss (float): The train loss.
+        train_acc (float): The train accuracy.
+    """
+
+    model.train()
+    train_loss: float = 0
+    train_acc: float= 0
+
+    for batch, (X, y) in enumerate(tqdm(dataloader, "Training Network")):
         X, y = X.to(device), y.to(device)
 
-        y_pred, _ = model(X)
+        y_pred = model(X)
 
-        loss = loss_fn(y_pred, y)
+        loss = criterion(y_pred, y)
         train_loss += loss.item()
 
         optimizer.zero_grad()
@@ -41,21 +53,35 @@ def _train_step(model: torch.nn.Module,
     return train_loss, train_acc
 
 
+def _test_step(model: torch.nn.Module,
+              dataloader: torch.utils.data.DataLoader,
+              criterion: torch.nn.Module,
+              device: str) -> Tuple[float, float]:
 
-def _test_step(model: torch.nn.Module, 
-              dataloader: torch.utils.data.DataLoader, 
-              loss_fn: torch.nn.Module,
-              device: torch.device) -> Tuple[float, float]:
-    
+    """
+    Function that calculates the loss and acc for one epoch on the test data.
+
+    Args:
+        model (torch.nn.Module): The model to test.
+        dataloader (torch.utils.data.DataLoader): The DataLoader to test with.
+        criterion (torch.nn.Module): The function that calculates the loss.
+        device (str): The device used by torch.
+
+    Returns:
+        test_loss (float): The Test loss.
+        test_acc (float): The test accuracy.
+    """
+
     model.eval()
-    test_loss, test_acc = 0, 0 
-    
+    test_loss: float= 0
+    test_acc: float= 0
+
     with torch.inference_mode():
-        for batch, (X, y) in enumerate(tqdm(dataloader, f"Evaluating Network")):
+        for batch, (X, y) in enumerate(tqdm(dataloader, "Evaluating Network")):
             X, y = X.to(device), y.to(device)
 
-            y_pred_logits, _ = model(X)
-            loss = loss_fn(y_pred_logits, y)
+            y_pred_logits = model(X)
+            loss = criterion(y_pred_logits, y)
             test_loss += loss.item()
 
             # Calculate and accumulate accuracy metric across all batches
@@ -65,28 +91,71 @@ def _test_step(model: torch.nn.Module,
     test_loss = test_loss/len(dataloader)
     test_acc = test_acc/len(dataloader)
     return test_loss, test_acc
-        
 
 
-def train_vit(model, train_loader, test_loader, optimizer, criterion, epochs : int, device):
+def train(model: torch.nn.Module,
+          train_loader: torch.utils.data.DataLoader,
+          test_loader: torch.utils.data.DataLoader,
+          optimizer: torch.optim.Optimizer,
+          criterion: torch.nn.Module,
+          epochs: int,
+          device: str) -> None:
+
+    """
+    Function used to train the model and report the train and test loss for each epoch.
+
+    Args:
+        model (torch.nn.Module): The model to train.
+        train_loader (torch.utils.data.DataLoader): The DataLoader for the training data.
+        test_loader (torch.utils.data.DataLoader): The DataLoader for the testing data.
+        optimizer (torch.optim.Optimizer): The function that calculates the gradient.
+        criterion (torch.nn.Module): The function that calculates the loss and backpropagation.
+        epochs (int): The number of epochs to train the model.
+        device (str): the device used by torch.
+    """
 
     model.to(device)
     print(f'Model: {model} is training.')
 
     for epoch in range(epochs):
         print(f'\nEpochs [Current/Total]: [{epoch+1}/{epochs}]')
-        train_loss, train_acc = _train_step(model=model, dataloader=train_loader, loss_fn=criterion, optimizer=optimizer, device=device)
-        test_loss, test_acc = _test_step(model=model, dataloader=test_loader, loss_fn=criterion, device=device)
+        train_loss, train_acc = _train_step(model=model,
+                                            dataloader=train_loader,
+                                            criterion=criterion,
+                                            optimizer=optimizer,
+                                            device=device)
 
-        print(f'Train Loss => {train_loss:.4f}, Train Acc => {train_acc:.4f}, Eval Loss => {test_loss:.4f}, Eval Acc => {test_acc:.4f}')
-    
-    # Save the trained model
-    save_model(epochs, model, optimizer, criterion, 'trained_model.pth')
+        test_loss, test_acc = _test_step(model=model,
+                                         dataloader=test_loader,
+                                         criterion=criterion,
+                                         device=device)
+
+        print(f'Train Loss => {train_loss:.4f}, ',
+              f'Train Acc => {train_acc:.4f}, ',
+              f'Eval Loss => {test_loss:.4f}, ',
+              f'Eval Acc => {test_acc:.4f}')
+
+    # # Save the trained model
+    # save_model(epochs, model, optimizer, criterion, 'trained_model.pth')
 
 
-def validate(model, val_loader, criterion, saved_model_path=None):
+def validate(model: torch.nn.Module,
+             val_loader: torch.utils.data.DataLoader,
+             criterion: torch.nn.Module,
+             saved_model_path: str="") -> None:
+
+    """
+    Function to validate the model.
+
+    Args:
+        model (torch.nn.Module): The model to validate.
+        val_loader (torch.utils.data.DataLoader): The DataLoader for the validation data.
+        criterion (torch.nn.Module): The function that calculates the loss.
+        saved_model_path (str): The path used to load a pretrained state dictionary to the model.
+    """
+
     # Load the trained parameters
-    if saved_model_path:
+    if saved_model_path != "":
         model.load_state_dict(torch.load(saved_model_path)['model_state_dict'])
 
     # Set the model to evaluation mode
@@ -94,14 +163,13 @@ def validate(model, val_loader, criterion, saved_model_path=None):
 
     # Load the testing data
     # Assuming test_loader provides batches of (inputs, targets)
-    # Adjust this part according to your actual data loading process
-    test_loss = 0
+    test_loss: float= 0
     all_predictions = []
     all_targets = []
 
     with torch.inference_mode():
-        for batch, (inputs, targets) in enumerate(tqdm(val_loader, f'Validating model')):
-            pred, _ = model(inputs)
+        for batch, (inputs, targets) in enumerate(tqdm(val_loader, "Validating model")):
+            pred = model(inputs)
             loss = criterion(pred, targets)
             test_loss += loss.item() * inputs.size(0)  # Accumulate the test loss
 
@@ -110,118 +178,9 @@ def validate(model, val_loader, criterion, saved_model_path=None):
             all_targets.extend(targets.cpu().numpy())
 
     # Calculate the average test loss
-    test_loss /= len(val_loader.dataset)
+    test_loss /= float(len(val_loader.dataset))
     print(f"Val Loss: {test_loss:.4f}")
 
     # Calculate accuracy
     accuracy = accuracy_score(all_targets, all_predictions)
     print(f"Val Accuracy: {accuracy:.4f}")
-
-
-
-
-
-def single_image_val(img_url, model, transform, classes, device):
-    """
-    This function is for testing purposes and proof of concept of the attention mapping
-    """
-
-    img = Image.open(img_url)
-    x = transform(img)
-    model.to(device)
-
-    model.eval()
-    pred_logits, attention_mat = model(x.unsqueeze(dim=0).to(device))
-
-    print(attention_mat)
-    # attention_mat = attention_matrices
-
-    att_mat = torch.stack(attention_mat).squeeze(1)
-    print(f'This is the att_mat: {att_mat}', att_mat.shape)
-    # Average the attention weights across all heads.
-    att_mat = torch.mean(att_mat, dim=1)
-    print(f'This is the mean att_mat: {att_mat}', att_mat.shape)
-    # To account for residual connections, we add an identity matrix to the
-    # attention matrix and re-normalize the weights.
-    residual_att = torch.eye(att_mat.size(1))
-    aug_att_mat = att_mat + residual_att
-    aug_att_mat = aug_att_mat / aug_att_mat.sum(dim=-1).unsqueeze(-1)
-    print(aug_att_mat, aug_att_mat.shape)
-
-    # Recursively multiply the weight matrices
-    joint_attentions = torch.zeros(aug_att_mat.size())
-    joint_attentions[0] = aug_att_mat[0]
-
-    for n in range(1, aug_att_mat.size(0)):
-        joint_attentions[n] = torch.matmul(aug_att_mat[n], joint_attentions[n - 1])
-
-    # Attention from the output token to the input space.
-    v = joint_attentions[-1]
-    print(f'This is the v tensor: {v}', v.shape)
-    grid_size = int(np.sqrt(aug_att_mat.size(-1)))
-    print(grid_size)
-
-    # Assuming mask is a NumPy array
-    mask = v.reshape(grid_size, grid_size).detach().cpu().numpy()
-
-    # Resize mask to match image size
-    mask_pil = Image.fromarray(mask)
-    resized_mask_pil = transforms.Resize(img.size[::-1])(mask_pil)
-    resized_mask = np.array(resized_mask_pil)  # Convert back to NumPy array after resizing
-
-    # Normalize resized mask
-    resized_mask /= resized_mask.max()
-
-    # Apply mask to the image
-    img_arr = np.array(img)
-    masked_img_arr = (resized_mask[..., np.newaxis] * img_arr).astype(np.uint8)
-    result = Image.fromarray(masked_img_arr)
-
-    # Visualization
-    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 16))
-
-    ax1.set_title('Original')
-    ax2.set_title('Attention Map')
-    _ = ax1.imshow(img)
-    _ = ax2.imshow(result)
-
-    # Assuming `pred_logits` and `classes` are defined
-    probs = torch.nn.Softmax(dim=-1)(pred_logits)
-    top = torch.argsort(probs, dim=-1, descending=True)
-    print("Prediction Label and Attention Map!\n")
-    for prob, idx in zip(probs[0], top[0]):
-        print(f'{prob:.5f} : {classes[idx.item()]}', end='')
-
-    plt.show()
-
-    # mask = v.reshape(grid_size, grid_size).detach().cpu().numpy()
-
-    # # Resize mask to match image size
-    # resized_mask = transforms.Resize(img.size[::-1])(mask)
-    # resized_mask /= resized_mask.max()
-
-    # # Apply mask to the image
-    # img_arr = np.array(img)
-    # masked_img_arr = (resized_mask[..., np.newaxis] * img_arr).astype(np.uint8)
-
-    # result = Image.fromarray(masked_img_arr)
-
-    # fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 16))
-
-    # ax1.set_title('Original')
-    # ax2.set_title('Attention Map')
-    # _ = ax1.imshow(img)
-    # _ = ax2.imshow(result)
-
-    # probs = torch.nn.Softmax(dim=-1)(pred_logits)
-    # top = torch.argsort(probs, dim=-1, descending=True)
-    # print("Prediction Label and Attention Map!\n")
-    # for idx in top:
-    #     print(f'{probs[0, idx.item()]:.5f} : {classes[idx.item()]}', end='')
-
-
-    
-
-
-
-
