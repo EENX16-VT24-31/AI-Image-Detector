@@ -1,1 +1,4 @@
+*.pyc
+*.pth
+*.json
 *.tar.gz

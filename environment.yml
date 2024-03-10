@@ -2,12 +2,13 @@ name: KandidatENV
 channels:
   - defaults
 dependencies:
-  - mypy
   - numpy
   - pandas
-  - pillow
-  - python=3.11
   - pytorch
+  - python=3.11
+  - mypy
+  - pillow
   - torchvision
-  - tqdm
-prefix: /home/erwinia/miniconda3/envs/KandidatENV
+  - scikit-learn
+  - matplotlib
+prefix: C:\Users\maxsj\anaconda3\envs\KandidatENV
