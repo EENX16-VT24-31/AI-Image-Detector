@@ -178,7 +178,7 @@ def validate(model: torch.nn.Module,
             all_targets.extend(targets.cpu().numpy())
 
     # Calculate the average test loss
-    test_loss /= float(len(val_loader.dataset))
+    test_loss /= float(len(val_loader.dataset)) # type: ignore
     print(f"Val Loss: {test_loss:.4f}")
 
     # Calculate accuracy

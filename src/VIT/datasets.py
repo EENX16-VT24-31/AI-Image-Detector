@@ -43,10 +43,10 @@ def create_loaders(train_path: str,
     classes = dataset.classes
 
     if size1 > 0:
-        indices1 = np.random.choice(len(dataset), size1, replace=False)
+        indices1 = np.random.choice(len(dataset), size1, replace=False) # type: ignore
         dataset = torch.utils.data.Subset(dataset, indices1)
     if size2 > 0:
-        indices2 = np.random.choice(len(val), size2, replace=False)
+        indices2 = np.random.choice(len(val), size2, replace=False)# type: ignore
         val = torch.utils.data.Subset(val, indices2)
 
     # Calculate sizes for train and test datasets
