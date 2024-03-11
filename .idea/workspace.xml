@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c91d05d-5df2-4fbf-96e8-1567ab56c6e0" name="Changes" comment="created a ClassActivationMap">
-      <change afterPath="$PROJECT_DIR$/src/data/EyIkv3vXIAYyZb6.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/guided_backprobagation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/misc_functions.py" afterDir="false" />
+    <list default="true" id="1c91d05d-5df2-4fbf-96e8-1567ab56c6e0" name="Changes" comment="Implemented guided backprobagation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/misc_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/misc_functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,7 +230,14 @@
       <option name="project" value="LOCAL" />
       <updated>1709225905256</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Implemented guided backprobagation">
+      <created>1710173901908</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710173901908</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -254,7 +258,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="created a ClassActivationMap" />
-    <option name="LAST_COMMIT_MESSAGE" value="created a ClassActivationMap" />
+    <MESSAGE value="Implemented guided backprobagation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented guided backprobagation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

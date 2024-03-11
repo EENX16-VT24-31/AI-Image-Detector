@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import torch
 from torch.autograd import Variable
 from torchvision import models
-from model import BinaryResNet50NotPreTrained
+#from model import BinaryResNet50NotPreTrained
 
 
 def convert_to_grayscale(im_as_arr):
@@ -195,7 +195,7 @@ def preprocess_image(pil_im, resize_im=True):
     if type(pil_im) != Image.Image:
         try:
             pil_im = Image.fromarray(pil_im)
-        except Exception as e:
+        except Exception:
             print("could not transform PIL_img to a PIL Image object. Please check input.")
 
     # Resize image
