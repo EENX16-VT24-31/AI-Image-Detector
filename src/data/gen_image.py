@@ -101,10 +101,11 @@ class Datasets:
         test_images: ConcatDataset = \
             ConcatDataset([datasets.ImageFolder(os.path.join(path, "val"), transform=transform) for path in sub_dirs])
 
+        self.image_count: int
         if image_count and image_count < len(training_images):
             self.image_count = image_count
         else:
-            self.image_count: int = len(training_images)
+            self.image_count = len(training_images)
 
         train_size: int = int(self.split[0] * self.image_count)
         val_size: int = self.image_count - train_size
