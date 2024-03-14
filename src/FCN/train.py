@@ -37,11 +37,12 @@ if __name__ == "__main__":
         loss: torch.Tensor
 
         for inputs, labels in tqdm(train_loader, f"Training Network, Epoch {epoch_index+1}"):
-            labels = labels.view(-1, 1, 1, 1).expand(-1, 1, 224, 224).float()
-            inputs, labels = inputs.to(device), labels.to(device)
 
+            inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
+
+            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -55,11 +56,11 @@ if __name__ == "__main__":
         model.eval()
 
         for inputs, labels in tqdm(val_loader, f"Evaluating Network, Epoch {epoch_index + 1}"):
-            labels = labels.view(-1, 1, 1, 1).expand(-1, 1, 224, 224).float()
             inputs, labels = inputs.to(device), labels.to(device)
-
             optimizer.zero_grad()
             outputs = model(inputs)
+
+            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
             loss = loss_fn(outputs, labels)
             loss.backward()  # It might seem like this line does nothing, but performance is much better with it
 
@@ -70,5 +71,7 @@ if __name__ == "__main__":
         if avg_val_loss < best_eval_loss:
             best_eval_loss = avg_val_loss
             torch.save(model.state_dict(), "../../model/FCN_test_model.pth")
+        else:
+            torch.save(model.state_dict(), "../../model/FCN_test_model_overfit.pth")
 
     print("finished training")
