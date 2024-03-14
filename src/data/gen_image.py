@@ -115,6 +115,7 @@ class Datasets:
                                                  num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
         self.testing: DataLoader = DataLoader(test_images, batch_size=self.batch_size, shuffle=False,
                                               num_workers=self.num_workers, persistent_workers=True, pin_memory=True)
+        self.classes = ['ai', 'nature']
 
 
 # Example Usage
