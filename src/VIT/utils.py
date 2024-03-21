@@ -209,3 +209,89 @@ def set_seeds(seed: int=42) -> None:
     torch.manual_seed(seed)
     # Set the seed for CUDA torch operations (ones that happen on the GPU)
     torch.cuda.manual_seed(seed)
+
+def heatmap_b16(image_path: str,
+            model: torch.nn.Module,
+            device: str,
+            image_size: Tuple[int, int] = (224, 224),
+            patch_size: int = 16) -> None:
+    """
+    Creates an image with an attention map overlayed on top of the original image.
+
+    Args:
+        image_path (str): The path to the image we want to make a heatmap with.
+        model (torch.nn.Module): The model whose attention we want to use.
+        device (str): The device that handles the torch operations.
+        image_size (Tuple[int, int]): The size of the resulting image and heatmap.
+        patch_size (int): The patch size used when calculating the resulting heatmap.
+    """
+
+    # Open and transform the image
+    image = Image.open(image_path)
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.ToTensor()
+    ])
+    image_tensor = transform(image)
+
+    # Move model to the specified device and set to evaluation mode
+    model.to(device)
+    model.eval()
+
+    # Extract patches from the image
+    patches = model.model._process_input(image_tensor.unsqueeze(0))
+
+    # Attach class token and position embedding to patches
+
+    transformer_input = torch.cat((model.model.class_token, patches), dim=1) + model.model.encoder.pos_embedding
+
+    # Pass input through the first linear layer in the transformer
+    transformer_input_expanded = model.model.encoder.layers.encoder_layer_0.mlp[0](transformer_input)
+
+    # Split querry, key, value into multiple q, k, and v vectors for multi-head attention
+    qkv = transformer_input_expanded
+    qkv = qkv.reshape(model.model.seq_length, 3, 16, 64)
+    q = qkv[:, 0].permute(1, 0, 2)
+    k = qkv[:, 1].permute(1, 0, 2)
+    kT = k.permute(0, 2, 1)
+
+    # Calculate attention matrix
+    attention_matrix = q @ kT
+
+    # Average the attention weights across all heads
+    attention_matrix_mean = torch.mean(attention_matrix, dim=0)
+
+    # Add an identity matrix to account for residual connections
+    residual_att = torch.eye(attention_matrix_mean.size(1)).to(device)
+    aug_att_mat = attention_matrix_mean + residual_att
+    aug_att_mat = aug_att_mat / aug_att_mat.sum(dim=-1).unsqueeze(-1)
+
+    # Recursively multiply the weight matrices
+    joint_attentions = torch.zeros(aug_att_mat.size()).to(device)
+    joint_attentions[0] = aug_att_mat[0]
+    for n in range(1, aug_att_mat.size(0)):
+        joint_attentions[n] = torch.matmul(aug_att_mat[n], joint_attentions[n - 1])
+
+    # Resize attention map
+    attn_heatmap = joint_attentions[0, 1:].reshape((int(image_size[0] / patch_size), int(image_size[1] / patch_size)))
+    attn_heatmap_resized = F.interpolate(attn_heatmap.unsqueeze(0).unsqueeze(0),
+                                         [image_size[0], image_size[1]],
+                                         mode='bilinear').view(image_size[0], image_size[1], 1)
+
+    # Create a plot for the image with the attention map overlayed
+    fig, ax = plt.subplots(figsize=(5, 5))
+
+    # Display the original sample with reduced opacity
+    image = np.asarray(image_tensor.cpu()).transpose(1, 2, 0)
+    ax.imshow(image, alpha=0.6)
+
+    # Display the attention map with reduced opacity
+    attn_heatmap = attn_heatmap_resized.detach().cpu().numpy().squeeze()
+    ax.imshow(attn_heatmap, cmap='jet', alpha=0.4)
+    ax.set_title("Attention Heatmap")
+
+    # Turn off axis labels and ticks
+    ax.set_axis_off()
+
+    # Show the plot
+    plt.show()
