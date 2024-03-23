@@ -14,7 +14,7 @@ class BinaryResNet50NotPreTrained(nn.Module):
 
     def forward(self, x):
         return F.sigmoid(self.resnet50(x))
-    
+
 
 class BinaryResNet18PreTrained(nn.Module):
     def __init__(self):
