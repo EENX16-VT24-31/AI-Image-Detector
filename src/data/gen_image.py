@@ -38,13 +38,15 @@ class Datasets:
     rgb_std:param default = (0.5, 0.5, 0.5), standard deviation values per rgb color
     generators:param list of generators to use, if undefined set to None, and all generators will be used
     transform:param transforms to apply to images, if undefined, a standard transform will be applied
+    image_count:param limit the number of images in training + validation set by setting image_count to a smaller value
     """
 
     def __init__(self, base_path: str, split: tuple[float, float] = (0.9, 0.1),
                  batch_size: int = 32, num_workers: int | None = os.cpu_count(),
                  rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
                  rgb_std: tuple[float, float, float] = (0.5, 0.5, 0.5),
-                 generators: list[Generator] | None = None, transform: transforms.Compose | None = None):
+                 generators: list[Generator] | None = None, transform: transforms.Compose | None = None,
+                 image_count: int | None = None):
 
         if generators is None:
             generators = [Generator.ALL]
@@ -99,15 +101,20 @@ class Datasets:
         test_images: ConcatDataset = \
             ConcatDataset([datasets.ImageFolder(os.path.join(path, "val"), transform=transform) for path in sub_dirs])
 
-        self.image_count: int = len(training_images)
+        self.image_count: int
+        if image_count and image_count < len(training_images):
+            self.image_count = image_count
+        else:
+            self.image_count = len(training_images)
 
         train_size: int = int(self.split[0] * self.image_count)
         val_size: int = self.image_count - train_size
+        trash_size: int = len(training_images) - train_size - val_size
 
         train_set: Subset
         val_set: Subset
-        train_set, val_set = \
-            random_split(training_images, [train_size, val_size], generator=torch.manual_seed(1337))
+        train_set, val_set, _ = \
+            random_split(training_images, [train_size, val_size, trash_size], generator=torch.manual_seed(1337))
 
         self.training: DataLoader = DataLoader(train_set, batch_size=self.batch_size, shuffle=True,
                                                num_workers=self.num_workers, persistent_workers=True, pin_memory=True)

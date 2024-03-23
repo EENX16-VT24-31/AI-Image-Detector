@@ -29,9 +29,9 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False)
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 # Definiera CNN-modellen
-class Net(nn.Module):
+class CNN(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
+        super(CNN, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
@@ -49,12 +49,13 @@ class Net(nn.Module):
         return x
 
 # Skapa en instans av modellen och definiera förlustfunktion och optimerare
-net = Net()
+model = CNN()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.01) # lr=0.001, momentum=0.9)
-
+optimizer = optim.SGD(model.parameters(), lr=0.01) # lr=0.001, momentum=0.9)
+num_epochs = 5
 # Träna modellen
-for epoch in range(5):  # loopa över datasetet flera gånger
+
+for epoch in range(num_epochs):  # loopa över datasetet flera gånger
 
     running_loss = 0.0
     for i, data in enumerate(trainloader):
@@ -65,7 +66,7 @@ for epoch in range(5):  # loopa över datasetet flera gånger
         #optimizer.zero_grad()
 
         # framåtpassning + bakåtpassning + optimering
-        outputs = net(inputs)
+        outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
@@ -75,22 +76,33 @@ for epoch in range(5):  # loopa över datasetet flera gånger
 
         # skriv ut statistik
         running_loss += loss.item()
-        if i % 2000 == 1999:    # skriv ut var 2000 minibatches
-            print('Epoch %d, iteration %5d, loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
+        if i % 2500 == 2499:    # skriv ut var 2500 minibatches
+            print('Epoch %d/%d, iteration %5d/%5d, loss: %.3f' %
+                  (epoch + 1, num_epochs, i + 1, len(trainloader), running_loss / 2500))
             running_loss = 0.0
+
+    model.eval()
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels in testloader:
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+        print(f'Accuracy (on testdata): {(correct/total)*100:.2f}%')
 
 print('Träning klar')
 
 
 # Evaluate the model on the testdata and calculate confusion matrix
-net.eval()
+model.eval()
 true_labels = []
 predicted_labels = []
 with torch.no_grad():
     for data in testloader:
         images, labels = data
-        outputs = net(images)
+        outputs = model(images)
         _, predicted = torch.max(outputs, 1)
         true_labels.extend(labels.numpy())
         predicted_labels.extend(predicted.numpy())
