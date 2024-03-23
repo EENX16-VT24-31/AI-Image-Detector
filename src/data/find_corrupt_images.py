@@ -19,14 +19,12 @@ def check_for_corrupt_files(folder_path):
                 # Handle the error gracefully
                 print(f"Error: {e} - {file_path} is corrupt.")
                 corrupt_files.append(file_path)
-    
     return corrupt_files
 
 if __name__ == "__main__":
     folder_path = "C:/Kurser/Kandidatarbete/GenImage/sdv4/train/nature"
     #folder_path = "C:/Kurser/Kandidatarbete/GenImage/sdv4/val/nature"
     corrupt_files = check_for_corrupt_files(folder_path)
-    
     if corrupt_files:
         print(f"Found {len(corrupt_files)} corrupt file(s):")
         for file_path in corrupt_files:

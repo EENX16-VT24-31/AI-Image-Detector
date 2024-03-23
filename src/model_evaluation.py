@@ -4,8 +4,8 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.data
-from torch.utils.data import Dataset, DataLoader 
-from torchvision import datasets
+#from torch.utils.data import Dataset, DataLoader
+#from torchvision import datasets
 import torch.optim as optim
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -19,10 +19,12 @@ transform = transforms.Compose([
 
 # Ladda CIFAR10-datasetet och definiera laddare för träning och test
 trainset1 = torch.utils.data.Dataset()
-trainset = torchvision.datasets.CIFAR10(root='.\eval_data', train=True, download=False, transform=transform) #download=True
+trainset = torchvision.datasets.CIFAR10(root='.\eval_data', train=True,
+                                        download=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4, shuffle=True)
 
-testset = torchvision.datasets.CIFAR10(root='.\eval_data', train=False, download=False, transform=transform) #download=True,  root = './data'
+testset = torchvision.datasets.CIFAR10(root='.\eval_data', train=False,
+                                       download=False, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False)
 
 # Definiera klasserna i CIFAR10

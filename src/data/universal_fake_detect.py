@@ -1,4 +1,3 @@
-import torch
 from torch.utils.data import DataLoader, random_split, ConcatDataset, Subset
 from torchvision import transforms, datasets
 
@@ -93,7 +92,6 @@ class Datasets:
 #         if i == 10:
 #             break
 
-
 #Plot some images from the dataset
 def plot_images(set, num_images=10):
     fig, axes = plt.subplots(1, num_images, figsize=(15, 3))
@@ -103,5 +101,4 @@ def plot_images(set, num_images=10):
             axes[i].imshow(image.permute(1, 2, 0))  # Permute the dimensions for correct display
             axes[i].set_title("Label: %d" % label)
             axes[i].axis('off')
-        break  
-
+        break

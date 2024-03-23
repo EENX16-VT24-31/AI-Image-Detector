@@ -1,12 +1,11 @@
 import torch
 import torch.utils.data
-import torchvision
-from torchvision import transforms
-from torchvision import datasets
+#from torchvision import transforms
+#from torchvision import datasets
 
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader 
+#from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -15,8 +14,10 @@ import numpy as np
 from data.gen_image import Datasets
 from data.gen_image import Generator
 
-from model import BinaryResNet50NotPreTrained
+#from model import BinaryResNet50NotPreTrained
 from model import BinaryResNet18PreTrained
+
+import multiprocessing
 
 
 # Define CNN-model
@@ -44,8 +45,6 @@ class CNN(nn.Module):
         x = F.relu(self.fc2(x))
         x = torch.sigmoid(self.fc3(x))
         return x
-
-import multiprocessing
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
@@ -90,7 +89,6 @@ if __name__ == "__main__":
                     print('Epoch %d/%d, iteration %5d/%5d, loss: %.3f' %
                         (epoch + 1, num_epochs, i + 1, len(dataset.training), running_loss / 50))
                     running_loss = 0.0
-                
                     #j += 1
                     # if j % 5 == 4:
                     #     model.eval()
