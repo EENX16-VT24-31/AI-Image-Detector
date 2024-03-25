@@ -8,7 +8,7 @@ from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 from src.data import gen_image
 
-FULL_IMAGE_TEST = False
+FULL_IMAGE_TEST: bool = False
 
 if __name__ == "__main__":
     # Enable freeze support for multithreading on Windows, has no effect in other operating systems
@@ -34,14 +34,12 @@ if __name__ == "__main__":
         datasets = gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4])
 
     # Get platt scaling values
-    platt_a: float
-    platt_b: float
-    platt_a, platt_b = get_platt_params(model, datasets.validation)
+    platt_params = get_platt_params(model, datasets.validation)
 
     # Setup metrics
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     test_loss: float = 0.0
-    metric = BinaryConfusionMatrix()
+    metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
 
     inputs: torch.Tensor
     labels: torch.Tensor
@@ -59,7 +57,7 @@ if __name__ == "__main__":
             outputs: torch.Tensor = model(inputs)
 
             labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
-            predicted_labels = torch.round(platt_scale(outputs, platt_a, platt_b))
+            predicted_labels = torch.round(platt_scale(outputs, platt_params))
 
             # Update BinaryConfusionMatrix
             metric.update(
