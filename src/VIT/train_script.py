@@ -23,6 +23,7 @@ if __name__ == "__main__":
                                  weight_decay=WEIGHT_DECAY)
 
     loss_fn = torch.nn.CrossEntropyLoss()
+
     classes: list[str] = dataset.classes
     training: DataLoader = dataset.training
     validation: DataLoader = dataset.validation

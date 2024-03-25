@@ -9,7 +9,7 @@ from src.VIT.manual_transforms import create_transform
 # Hyperparameters
 lr: float= 0.05
 epochs: int= 1
-tt_size: int= 1000
+tt_size: int= 100
 val_size: int= 100
 weight_decay: float= 0.00
 
@@ -45,7 +45,7 @@ def train_test(train_path: str,
               epochs=epochs,
               device=device)
 
-    validate(model=vit, val_loader=val_loader, criterion=loss_fn)
+    validate(model=vit, val_loader=val_loader, criterion=loss_fn, device=device)
 
     pred_and_plot_image(model=vit,
                         class_names=classes,

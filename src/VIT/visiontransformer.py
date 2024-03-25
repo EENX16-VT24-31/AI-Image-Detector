@@ -173,9 +173,9 @@ class VisionTransformer(nn.Module):
 class VIT_b16(nn.Module):
     def __init__(self, pretrained=False) -> None:
         super(VIT_b16, self).__init__()
-        weights = torchvision.models.ViT_B_16_Weights
+        weights = torchvision.models.ViT_L_16_Weights
         num_classes: int=2
-        self.model = torchvision.models.vit_b_16(weights=weights)
+        self.model = torchvision.models.vit_l_16(weights=weights)
 
         for params in self.model.parameters():
             params.requires_grad=False
@@ -183,7 +183,7 @@ class VIT_b16(nn.Module):
         self.model.heads = nn.Sequential(nn.Linear(self.model.hidden_dim, num_classes))
 
         if pretrained:
-            state_dict = torch.load(LOAD_PATH)
+            state_dict = torch.load(LOAD_PATH) if torch.cuda.is_available() else torch.load(LOAD_PATH, map_location=torch.device('cpu'))
             for key in list(state_dict.keys()):
                 state_dict[key.replace('model.', '')] = state_dict.pop(key)
             self.model.load_state_dict(state_dict=state_dict)

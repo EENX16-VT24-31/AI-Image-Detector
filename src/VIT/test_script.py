@@ -19,7 +19,7 @@ if __name__ == "__main__":
     classes: list[str] = dataset.classes
     testing: DataLoader = dataset.testing
 
-    validate(model=model, val_loader=testing, criterion=loss_fn)
+    validate(model=model, val_loader=testing, criterion=loss_fn, device=device)
 
     pred_and_plot_image(model=model, class_names=classes,
                         image_path=AI_IMAGE_PATH,

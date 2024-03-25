@@ -250,7 +250,7 @@ def heatmap_b16(image_path: str,
 
     # Split querry, key, value into multiple q, k, and v vectors for multi-head attention
     qkv = transformer_input_expanded
-    qkv = qkv.reshape(model.model.seq_length, 3, 16, 64)
+    qkv = qkv.reshape(model.model.seq_length, 4, 16, 64)
     q = qkv[:, 0].permute(1, 0, 2)
     k = qkv[:, 1].permute(1, 0, 2)
     kT = k.permute(0, 2, 1)
