@@ -1,6 +1,6 @@
 
 import torch
-from src.VIT.visiontransformer import VisionTransformer
+from src.VIT.visiontransformer import VIT_b16
 from src.data import gen_image
 from src.VIT.config import LEARNING_RATE, EPOCHS, WEIGHT_DECAY, IMAGE_COUNT, BASE_PATH, GENERATORS
 from src.VIT.vit_helper import train
@@ -14,7 +14,8 @@ if __name__ == "__main__":
     base_path: str= BASE_PATH
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = VisionTransformer().to(device)
+    model = VIT_b16().to(device)
+
     dataset = gen_image.Datasets(base_path, generators=GENERATORS, image_count=IMAGE_COUNT)
 
     optimizer = torch.optim.Adam(params=model.parameters(),
