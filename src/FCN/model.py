@@ -3,6 +3,8 @@ from torch import nn
 import torch.nn.functional as F
 from torchvision.models.segmentation import FCN
 
+from src.FCN.config import MODEL_PATH
+
 class FCN_test(nn.Module):
     def __init__(self):
         super().__init__()
@@ -24,7 +26,7 @@ class FCN_resnet50(nn.Module):
         self.model: FCN = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', weights="DEFAULT")
         self.model.classifier[4] = nn.Conv2d(512, 1, kernel_size=1, stride=1)
         if pretrained:
-            pretrained_data = torch.load("../../model/FCN_test_model.pth")
+            pretrained_data = torch.load(MODEL_PATH)
             weights = {key.replace("model.", ""): val for key, val in pretrained_data.items()}
             self.model.load_state_dict(weights)
 

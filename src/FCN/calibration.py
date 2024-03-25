@@ -47,12 +47,11 @@ def get_platt_params(model: nn.Module, val_loader: DataLoader, refinements: int 
     platt_params: torch.Tensor = nn.Parameter(torch.tensor([-10.0, 5.0], device=device))
 
     for i in range(refinements):
-        print(f"Calibration cycle [{i + 1}/{refinements}]")
         optimizer: optim.Optimizer = optim.Adam([platt_params], lr=10 ** -(i + 1))
 
         inputs: torch.Tensor
         labels: torch.Tensor
-        for inputs, labels in tqdm(val_loader):
+        for inputs, labels in tqdm(val_loader, f"Calibrating, cycle [{i + 1}/{refinements}]"):
             # Get the data from the model and expand labels
             with torch.no_grad():
                 inputs, labels = inputs.to(device), labels.to(device)

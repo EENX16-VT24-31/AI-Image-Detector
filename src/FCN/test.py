@@ -44,7 +44,7 @@ if __name__ == "__main__":
     inputs: torch.Tensor
     labels: torch.Tensor
     skipped: int = 0
-    for inputs, labels in tqdm(datasets.testing):
+    for inputs, labels in tqdm(datasets.testing, "Calculating accuracy"):
         # Due to CUDA memory constraints, some images crash the test PCs, if you have more VRAM, you can increase
         # MAX_IMAGE_SIZE
         if inputs.size()[-1] * inputs.size()[-2] > MAX_IMAGE_SIZE:

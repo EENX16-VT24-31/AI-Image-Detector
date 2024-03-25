@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.FCN.model import FCN_resnet50
-from src.FCN.config import LEARNING_RATE, EPOCHS, DATA_PATH
+from src.FCN.config import LEARNING_RATE, EPOCHS, DATA_PATH, MODEL_PATH
 from src.data import gen_image
 
 if __name__ == "__main__":
@@ -55,23 +55,21 @@ if __name__ == "__main__":
         running_loss = 0.0
         model.eval()
 
-        for inputs, labels in tqdm(val_loader, f"Evaluating Network, Epoch {epoch_index + 1}"):
-            inputs, labels = inputs.to(device), labels.to(device)
-            optimizer.zero_grad()
-            outputs = model(inputs)
+        with torch.no_grad():
+            for inputs, labels in tqdm(val_loader, f"Evaluating Network, Epoch {epoch_index + 1}"):
+                inputs, labels = inputs.to(device), labels.to(device)
+                optimizer.zero_grad()
+                outputs = model(inputs)
 
-            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
-            loss = loss_fn(outputs, labels)
-            loss.backward()  # It might seem like this line does nothing, but performance is much better with it
+                labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
 
-            running_loss += loss.item()
+                loss = loss_fn(outputs, labels)
+                running_loss += loss.item()
 
         avg_val_loss: float = running_loss / len(val_loader)
         print("Validation loss:", avg_val_loss, end="\n\n")
         if avg_val_loss < best_eval_loss:
             best_eval_loss = avg_val_loss
-            torch.save(model.state_dict(), "../../model/FCN_test_model.pth")
-        else:
-            torch.save(model.state_dict(), "../../model/FCN_test_model_overfit.pth")
+            torch.save(model.state_dict(), MODEL_PATH)
 
     print("finished training")
