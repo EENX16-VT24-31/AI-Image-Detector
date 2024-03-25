@@ -140,7 +140,9 @@ def train(model: torch.nn.Module,
 def validate(model: torch.nn.Module,
              val_loader: torch.utils.data.DataLoader,
              criterion: torch.nn.Module,
-             device: str) -> None:
+             device: str,
+             saved_model_path: str=""
+             ) -> None:
 
     """
     Function to validate the model.
@@ -149,6 +151,8 @@ def validate(model: torch.nn.Module,
         model (torch.nn.Module): The model to validate.
         val_loader (torch.utils.data.DataLoader): The DataLoader for the validation data.
         criterion (torch.nn.Module): The function that calculates the loss.
+        saved_model_path (str): The path used to load a pretrained state dictionary to the model.
+        device (str): The device to perform validation on
     """
 
     # Set the model to evaluation mode

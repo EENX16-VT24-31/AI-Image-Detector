@@ -232,7 +232,7 @@ def heatmap_b16(image_path: str,
         transforms.Resize(image_size),
         transforms.ToTensor()
     ])
-    image_tensor = transform(image)
+    image_tensor = transform(image).to(device)
 
     # Move model to the specified device and set to evaluation mode
     model.to(device)

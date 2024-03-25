@@ -36,4 +36,4 @@ if __name__ == "__main__":
           epochs=EPOCHS,
           device=device)
 
-    torch.save(model.state_dict(), "../../models/VIT_test_model.pth")
+    torch.save(model.state_dict(), "Vit_test.pth")
