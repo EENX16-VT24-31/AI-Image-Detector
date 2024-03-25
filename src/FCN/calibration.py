@@ -42,7 +42,7 @@ def get_platt_params(model: nn.Module, val_loader: DataLoader) -> torch.Tensor:
         pretrained_data: torch.Tensor = torch.load(PLATT_PATH)
         print("Successfully loaded stored platt parameters")
         return pretrained_data
-    except:
+    except FileNotFoundError:
         print("No stored platt parameters for the given model, need to calibrate")
 
     model.to(device)
