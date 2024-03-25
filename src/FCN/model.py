@@ -5,7 +5,10 @@ from torchvision.models.segmentation import FCN
 
 from src.FCN.config import MODEL_PATH
 
-class FCN_test(nn.Module):
+class _FCN_test(nn.Module):
+    """
+    Small model to illustrate the components of an FCN, not to be used!
+    """
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=9, stride=1)
@@ -26,7 +29,14 @@ class FCN_resnet50(nn.Module):
         self.model: FCN = torch.hub.load('pytorch/vision:v0.10.0', 'fcn_resnet50', weights="DEFAULT")
         self.model.classifier[4] = nn.Conv2d(512, 1, kernel_size=1, stride=1)
         if pretrained:
-            pretrained_data = torch.load(MODEL_PATH)
+            try:
+                pretrained_data: dict = torch.load(MODEL_PATH)
+            except FileNotFoundError:
+                print("No pth file for the given model found, please check the path in config,"
+                      " or train the model with the train.py script")
+                exit(1337)
+                return  # Not reachable, but PyCharm gets mad if it isn't here
+
             weights = {key.replace("model.", ""): val for key, val in pretrained_data.items()}
             self.model.load_state_dict(weights)
 
