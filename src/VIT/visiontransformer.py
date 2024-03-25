@@ -186,7 +186,7 @@ class VIT_b16(nn.Module):
             if torch.cuda.is_available():
                 state_dict = torch.load(LOAD_PATH)
             else:
-                torch.load(LOAD_PATH, map_location=torch.device('cpu'))
+                state_dict = torch.load(LOAD_PATH, map_location=torch.device('cpu'))
             for key in list(state_dict.keys()):
                 state_dict[key.replace('model.', '')] = state_dict.pop(key)
             self.model.load_state_dict(state_dict=state_dict)
