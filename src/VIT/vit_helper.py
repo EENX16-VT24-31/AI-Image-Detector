@@ -142,7 +142,9 @@ def train(model: torch.nn.Module,
 def validate(model: torch.nn.Module,
              val_loader: torch.utils.data.DataLoader,
              criterion: torch.nn.Module,
-             saved_model_path: str="") -> None:
+             device: str,
+             saved_model_path: str=""
+             ) -> None:
 
     """
     Function to validate the model.
@@ -152,6 +154,7 @@ def validate(model: torch.nn.Module,
         val_loader (torch.utils.data.DataLoader): The DataLoader for the validation data.
         criterion (torch.nn.Module): The function that calculates the loss.
         saved_model_path (str): The path used to load a pretrained state dictionary to the model.
+        device (str): The device to perform validation on
     """
 
     # Load the trained parameters
@@ -169,6 +172,7 @@ def validate(model: torch.nn.Module,
 
     with torch.inference_mode():
         for batch, (inputs, targets) in enumerate(tqdm(val_loader, "Validating model")):
+            inputs, targets = inputs.to(device), targets.to(device)
             pred = model(inputs)
             loss = criterion(pred, targets)
             test_loss += loss.item() * inputs.size(0)  # Accumulate the test loss

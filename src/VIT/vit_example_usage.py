@@ -45,7 +45,7 @@ def train_test(train_path: str,
               epochs=epochs,
               device=device)
 
-    validate(model=vit, val_loader=val_loader, criterion=loss_fn)
+    validate(model=vit, val_loader=val_loader, criterion=loss_fn, device=device)
 
     pred_and_plot_image(model=vit,
                         class_names=classes,
