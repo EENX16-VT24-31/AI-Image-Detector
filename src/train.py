@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import v2  # type: ignore
 from config import LEARNING_RATE, BATCH_SIZE, EPOCHS
 
-from model import BinaryResNet50NotPreTrained
+from src.model import BinaryResNet50NotPreTrained
 # from torch.utils.tensorboard import SummaryWriter
 
 device = "cuda" if torch.cuda.is_available() else "cpu"

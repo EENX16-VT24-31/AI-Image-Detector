@@ -5,9 +5,10 @@ from tqdm import tqdm
 
 from src.FCN.config import DATA_PATH, MAX_IMAGE_SIZE
 from src.FCN.model import FCN_resnet50
+from src.FCN.calibration import platt_scale, get_platt_params
 from src.data import gen_image
 
-FULL_IMAGE_TEST = True
+FULL_IMAGE_TEST: bool = False
 
 if __name__ == "__main__":
     # Enable freeze support for multithreading on Windows, has no effect in other operating systems
@@ -32,15 +33,18 @@ if __name__ == "__main__":
     else:
         datasets = gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4])
 
+    # Get platt scaling values
+    platt_params = get_platt_params(model, datasets.validation)
+
     # Setup metrics
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     test_loss: float = 0.0
-    metric = BinaryConfusionMatrix()
+    metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
 
     inputs: torch.Tensor
     labels: torch.Tensor
     skipped: int = 0
-    for inputs, labels in tqdm(datasets.testing):
+    for inputs, labels in tqdm(datasets.testing, "Calculating accuracy"):
         # Due to CUDA memory constraints, some images crash the test PCs, if you have more VRAM, you can increase
         # MAX_IMAGE_SIZE
         if inputs.size()[-1] * inputs.size()[-2] > MAX_IMAGE_SIZE:
@@ -48,22 +52,22 @@ if __name__ == "__main__":
             continue
 
         # Get testdata
-        inputs, labels = inputs.to(device), labels.to(device)
-        outputs: torch.Tensor = model(inputs)
+        with torch.no_grad():
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs: torch.Tensor = model(inputs)
 
-        labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
-        predicted_labels = torch.round(outputs)
+            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
+            predicted_labels = torch.round(platt_scale(outputs, platt_params))
 
-        # Update BinaryConfusionMatrix
-        metric.update(
-            torch.LongTensor(predicted_labels.to("cpu").long()).flatten(),
-            torch.LongTensor(labels.to("cpu").long()).flatten()
-        )
+            # Update BinaryConfusionMatrix
+            metric.update(
+                torch.LongTensor(predicted_labels.to("cpu").long()).flatten(),
+                torch.LongTensor(labels.to("cpu").long()).flatten()
+            )
 
-        # Update loss
-        loss: torch.Tensor = loss_fn(outputs, labels)
-        loss.backward()  # Does nothing, but performance seems to be better with this line
-        test_loss += loss.item()
+            # Update loss
+            loss: torch.Tensor = loss_fn(outputs, labels)
+            test_loss += loss.item()
 
     print(f"Skipped {skipped} images due to memory constraints")
 
