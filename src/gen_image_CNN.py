@@ -48,10 +48,9 @@ class CNN(nn.Module):
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-
-    base_path: str = "C:/Kurser/Kandidatarbete/Universal_Fake_Detect/progan"
-    split: tuple[float, float, float] = (0.8, 0.1, 0.1)
-    dataset: Datasets = Datasets(base_path, split)
+    
+    base_path: str = "C:/Kurser/Kandidatarbete/GenImage"
+    dataset: Datasets = Datasets(base_path, generators=[Generator.SD1_4])
 
     # Skapa en instans av modellen och definiera förlustfunktion och optimerare
     #model = BinaryResNet50NotPreTrained()
