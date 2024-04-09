@@ -1,16 +1,12 @@
 import torch
 import torch.utils.data
-#from torchvision import transforms
-#from torchvision import datasets
 
 import torch.nn as nn
 import torch.nn.functional as F
-#from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.metrics import confusion_matrix
 import numpy as np
 
-#from data.universal_fake_detect import Datasets
 from data.gen_image import Datasets
 from data.gen_image import Generator
 
@@ -48,10 +44,10 @@ class CNN(nn.Module):
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-    
+
     base_path: str = "C:/Kurser/Kandidatarbete/GenImage"
     dataset: Datasets = Datasets(base_path, generators=[Generator.SD1_4])
-
+    
     # Skapa en instans av modellen och definiera förlustfunktion och optimerare
     #model = BinaryResNet50NotPreTrained()
     model = BinaryResNet18PreTrained()

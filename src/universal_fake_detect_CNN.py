@@ -1,18 +1,14 @@
 import torch
 import torch.utils.data
-#from torchvision import transforms
-#from torchvision import datasets
 
 import torch.nn as nn
 import torch.nn.functional as F
-#from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.metrics import confusion_matrix
 import numpy as np
 
-#from data.universal_fake_detect import Datasets
-from data.gen_image import Datasets
-from data.gen_image import Generator
+from data.universal_fake_detect import Datasets
+
 
 #from model import BinaryResNet50NotPreTrained
 from model import BinaryResNet18PreTrained
