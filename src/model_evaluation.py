@@ -19,11 +19,11 @@ transform = transforms.Compose([
 
 # Ladda CIFAR10-datasetet och definiera laddare för träning och test
 trainset1 = torch.utils.data.Dataset()
-trainset = torchvision.datasets.CIFAR10(root='\eval_data', train=True,
+trainset = torchvision.datasets.CIFAR10(root=r'\eval_data', train=True,
                                         download=False, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4, shuffle=True)
 
-testset = torchvision.datasets.CIFAR10(root='\eval_data', train=False,
+testset = torchvision.datasets.CIFAR10(root=r'\eval_data', train=False,
                                        download=False, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=4, shuffle=False)
 
