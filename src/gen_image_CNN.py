@@ -47,8 +47,7 @@ if __name__ == "__main__":
 
     base_path: str = "C:/Kurser/Kandidatarbete/GenImage"
     dataset: Datasets = Datasets(base_path, generators=[Generator.SD1_4])
-    
-    # Skapa en instans av modellen och definiera förlustfunktion och optimerare
+    #Skapa en instans av modellen och definiera förlustfunktion och optimerare
     #model = BinaryResNet50NotPreTrained()
     model = BinaryResNet18PreTrained()
     #model = CNN()
