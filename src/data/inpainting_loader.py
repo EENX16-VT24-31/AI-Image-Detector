@@ -1,0 +1,77 @@
+import torch
+import torchvision.transforms
+from PIL import Image
+
+import os
+
+
+def pil_loader(path: str, mask: bool = False) -> Image.Image:
+    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    with open(path, "rb") as f:
+        img: Image.Image = Image.open(f)
+        if mask:
+            return img.convert("1")  # Black and white
+        return img.convert("RGB")
+
+
+class InpaintingDataset:
+    """
+    Class to load the inpainting dataset, very inefficient code, but its fine due to the limited number of images
+    """
+    def __init__(self, root_dir: str, transform: torchvision.transforms.Compose = None):
+        """
+        Arguments:
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
+        self.root_dir: str = root_dir
+        assert os.path.isdir(self.root_dir), "Root dir doesnt exist"
+
+        self.image_folder: str = os.path.join(root_dir, "images")
+        assert os.path.isdir(self.image_folder), "No images folder in root folder"
+
+        self.mask_folder: str = os.path.join(root_dir, "labels")
+        assert os.path.isdir(self.mask_folder), "No labels folder in root folder"
+
+        assert len(os.listdir(self.image_folder)) == len(
+            os.listdir(self.mask_folder)), "Differing length of input and labels folder"
+
+        self.transform: torchvision.transforms.Compose = transform
+
+    def __len__(self) -> int:
+        return len(os.listdir(self.image_folder))
+
+    def __iter__(self):
+        image_gen: list[str] = os.listdir(self.image_folder)
+        mask_gen: list[str] = os.listdir(self.mask_folder)
+
+        image: str
+        mask: str
+        for image, mask in zip(image_gen, mask_gen):
+            image_path: str = os.path.join(self.image_folder, image)
+            mask_path: str = os.path.join(self.mask_folder, mask)
+
+            image_pil: Image.Image = pil_loader(image_path)
+            mask_pil: Image.Image = pil_loader(mask_path, True).resize(image_pil.size)
+
+            if self.transform:
+                yield self.transform(image_pil), self.transform(mask_pil)
+            else:
+                yield image_pil, mask_pil
+
+
+# Example Usage
+if __name__ == "__main__":
+    root: str = r"/media/erwinia/T9/inpainting"
+    transform: torchvision.transforms.Compose = torchvision.transforms.Compose([
+        torchvision.transforms.ToTensor()
+    ])
+
+    inpainting_dataset: InpaintingDataset = InpaintingDataset(root, transform)
+
+    i: int
+    image: torch.Tensor
+    label: torch.Tensor
+    for i, (image, label) in enumerate(inpainting_dataset):
+        print(image, label)
