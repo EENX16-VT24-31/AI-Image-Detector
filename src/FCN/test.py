@@ -3,7 +3,7 @@ from torcheval.metrics import BinaryConfusionMatrix
 from torchvision import transforms
 from tqdm import tqdm
 
-from src.FCN.config import DATA_PATH, MAX_IMAGE_SIZE
+from src.FCN.config import DATA_PATH, MAX_IMAGE_SIZE, GENERATORS
 from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 from src.data import gen_image
@@ -29,9 +29,9 @@ if __name__ == "__main__":
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         ])
         datasets = \
-            gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4], transform=transform, batch_size=1)
+            gen_image.Datasets(DATA_PATH, generators=GENERATORS, transform=transform, batch_size=1)
     else:
-        datasets = gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4])
+        datasets = gen_image.Datasets(DATA_PATH, generators=GENERATORS)
 
     # Get platt scaling values
     platt_params = get_platt_params(model, datasets.validation)
@@ -40,6 +40,7 @@ if __name__ == "__main__":
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     test_loss: float = 0.0
     metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
+    full_image_metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
 
     inputs: torch.Tensor
     labels: torch.Tensor
@@ -56,8 +57,16 @@ if __name__ == "__main__":
             inputs, labels = inputs.to(device), labels.to(device)
             outputs: torch.Tensor = model(inputs)
 
-            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
-            predicted_labels = torch.round(platt_scale(outputs, platt_params))
+            full_image_labels: torch.Tensor = labels
+            full_image_prediction = torch.tensor([torch.round(torch.mean(output)) for output in outputs])
+
+            labels: torch.Tensor = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
+            predicted_labels: torch.Tensor = torch.round(platt_scale(outputs, platt_params))
+
+            full_image_metric.update(
+                torch.LongTensor(full_image_prediction.to("cpu").long()).flatten(),
+                torch.LongTensor(full_image_labels.to("cpu").long()).flatten()
+            )
 
             # Update BinaryConfusionMatrix
             metric.update(
@@ -73,13 +82,23 @@ if __name__ == "__main__":
 
     # Print test data
     m = metric.compute()
+    accuracy: torch.Tensor = m.trace() / m.sum()
+    recall: torch.Tensor = m[0, 0].item() / m[0, :].sum()
+    precision: torch.Tensor = m[0, 0].item() / m[:, 0].sum()
+    F1: torch.Tensor = 2 * precision * recall / (precision + recall)
+
+    print(f"Accuracy: {accuracy.item() * 100}%")
+    print(f"F1-Score: {F1.item()}")
+    print(test_loss / len(datasets.training))
+
+    m = full_image_metric.compute()
     accuracy = m.trace() / m.sum()
     recall = m[0, 0].item() / m[0, :].sum()
     precision = m[0, 0].item() / m[:, 0].sum()
     F1 = 2 * precision * recall / (precision + recall)
 
-    print(f"Accuracy: {accuracy.item()*100}%")
-    print(f"F1-Score: {F1.item()}")
+    print(f"Full Image Accuracy: {accuracy.item()*100}%")
+    print(f"Full Image F1-Score: {F1.item()}")
     print(test_loss/len(datasets.training))
 
 

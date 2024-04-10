@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.FCN.model import FCN_resnet50
-from src.FCN.config import LEARNING_RATE, EPOCHS, DATA_PATH, MODEL_PATH
+from src.FCN.config import LEARNING_RATE, EPOCHS, DATA_PATH, MODEL_PATH, GENERATORS
 from src.data import gen_image
 
 if __name__ == "__main__":
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     optimizer: torch.optim.Adam = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
     datasets: gen_image.Datasets = \
-        gen_image.Datasets(DATA_PATH, generators=[gen_image.Generator.SD1_4])
+        gen_image.Datasets(DATA_PATH, generators=GENERATORS)
 
     train_loader: DataLoader = datasets.training
     val_loader: DataLoader = datasets.validation

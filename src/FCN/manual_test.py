@@ -4,8 +4,9 @@ from PIL import Image
 from torchvision.transforms import transforms
 
 from src.FCN.model import FCN_resnet50
+from src.FCN.calibration import platt_scale, get_platt_params
 
-fileToTest: str = "C://Users//erwinia//Pictures//MjHY1ZFOGVBPubMgSbq0oby7oq93sm129HL8xUOrANU (1).jpg"
+fileToTest: str = r"C:\Users\erwinia\Pictures\image.png"
 
 
 def pil_loader(path: str) -> Image.Image:
@@ -44,5 +45,6 @@ if __name__ == "__main__":
     fig, (im, pred) = plt.subplots(1, 2)
     im.imshow(image)
 
-    pred.imshow(torch.round(prediction[0][0]).to("cpu").detach().numpy())
+    platt_params = get_platt_params()
+    pred.imshow(torch.round(platt_scale(prediction[0][0], platt_params)).to("cpu").detach().numpy())
     plt.show()
