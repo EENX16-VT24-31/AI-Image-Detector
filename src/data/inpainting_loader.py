@@ -3,6 +3,8 @@ import torchvision.transforms
 from PIL import Image
 
 import os
+import math
+import random
 
 
 def pil_loader(path: str, mask: bool = False) -> Image.Image:
@@ -18,13 +20,17 @@ class InpaintingDataset:
     """
     Class to load the inpainting dataset, very inefficient code, but its fine due to the limited number of images
     """
-    def __init__(self, root_dir: str, transform: torchvision.transforms.Compose = None):
+
+    def __init__(self, root_dir: str, data_set: str, transform: torchvision.transforms.Compose = None):
         """
         Arguments:
             root_dir (string): Directory with all the images.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
+        assert data_set.lower() in ["training", "validation", "testing", "train", "val", "test"], \
+            "data_set parameter must be set to training/train, validation/val or testing/test"
+
         self.root_dir: str = root_dir
         assert os.path.isdir(self.root_dir), "Root dir doesnt exist"
 
@@ -38,17 +44,33 @@ class InpaintingDataset:
             os.listdir(self.mask_folder)), "Differing length of input and labels folder"
 
         self.transform: torchvision.transforms.Compose = transform
+        if data_set.lower() in ["training", "train"]:
+            self.low_cut = 0
+            self.high_cut = 0.8
+        elif data_set.lower() in ["validation", "val"]:
+            self.low_cut = 0.8
+            self.high_cut = 0.9
+        else:
+            self.low_cut = 0.9
+            self.high_cut = 1
 
     def __len__(self) -> int:
         return len(os.listdir(self.image_folder))
 
     def __iter__(self):
-        image_gen: list[str] = os.listdir(self.image_folder)
-        mask_gen: list[str] = os.listdir(self.mask_folder)
+        low_cut_idx: int = math.floor(self.low_cut * len(self))
+        high_cut_idx: int = math.floor(self.high_cut * len(self))
+        images: list[str] = os.listdir(self.image_folder)
+        masks: list[str] = os.listdir(self.mask_folder)
+
+        data: list[tuple[str, str]] = list(zip(images, masks))
+        random.Random(420).shuffle(data)
+
+        data = data[low_cut_idx:high_cut_idx]
 
         image: str
         mask: str
-        for image, mask in zip(image_gen, mask_gen):
+        for image, mask in data:
             image_path: str = os.path.join(self.image_folder, image)
             mask_path: str = os.path.join(self.mask_folder, mask)
 
@@ -68,10 +90,12 @@ if __name__ == "__main__":
         torchvision.transforms.ToTensor()
     ])
 
-    inpainting_dataset: InpaintingDataset = InpaintingDataset(root, transform)
+    inpainting_training: InpaintingDataset = InpaintingDataset(root, "training", transform)
+    inpainting_validation: InpaintingDataset = InpaintingDataset(root, "val", transform)
+    inpainting_testing: InpaintingDataset = InpaintingDataset(root, "testing", transform)
 
     i: int
     image: torch.Tensor
     label: torch.Tensor
-    for i, (image, label) in enumerate(inpainting_dataset):
+    for i, (image, label) in enumerate(inpainting_testing):
         print(image, label)
