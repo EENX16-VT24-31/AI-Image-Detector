@@ -209,5 +209,5 @@ class VIT_b16(nn.Module):
             else:
             # return attention of the last block
                 x = encoder.ln_1(x)
-                att, weights = encoder.self_attention(x, x, x, average_attn_weights=False, need_weights=True)
+                att, weights = encoder.self_attention(x, x, x, need_weights=True)
         return att, weights
