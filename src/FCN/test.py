@@ -60,7 +60,7 @@ if __name__ == "__main__":
             full_image_labels: torch.Tensor = labels
             full_image_prediction = torch.tensor([torch.round(torch.mean(output)) for output in outputs])
 
-            labels: torch.Tensor = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
+            labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
             predicted_labels: torch.Tensor = torch.round(platt_scale(outputs, platt_params))
 
             full_image_metric.update(

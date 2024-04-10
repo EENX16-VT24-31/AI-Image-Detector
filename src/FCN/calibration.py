@@ -25,7 +25,7 @@ def platt_scale(logits: torch.Tensor, params: torch.Tensor) -> torch.Tensor:
     return logistic(logits)
 
 
-def get_platt_params(model: nn.Module = None, val_loader: DataLoader = None) -> torch.Tensor:
+def get_platt_params(model: nn.Module | None = None, val_loader: DataLoader | None = None) -> torch.Tensor:
     """
     Calculate the two platt parameters for a given model and dataset
     :param model: The model that will be tested, its parameters will not change from this function call,
