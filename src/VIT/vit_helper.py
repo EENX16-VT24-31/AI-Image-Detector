@@ -1,9 +1,7 @@
-# import torch.optim as optim
 from typing import Tuple
-#from utils import save_model
 import torch
 from tqdm import tqdm
-from sklearn.metrics import accuracy_score
+
 
 
 def _train_step(model: torch.nn.Module,
@@ -142,7 +140,9 @@ def train(model: torch.nn.Module,
 def validate(model: torch.nn.Module,
              val_loader: torch.utils.data.DataLoader,
              criterion: torch.nn.Module,
-             saved_model_path: str="") -> None:
+             device: str,
+             saved_model_path: str=""
+             ) -> None:
 
     """
     Function to validate the model.
@@ -152,35 +152,30 @@ def validate(model: torch.nn.Module,
         val_loader (torch.utils.data.DataLoader): The DataLoader for the validation data.
         criterion (torch.nn.Module): The function that calculates the loss.
         saved_model_path (str): The path used to load a pretrained state dictionary to the model.
+        device (str): The device to perform validation on
     """
-
-    # Load the trained parameters
-    if saved_model_path != "":
-        model.load_state_dict(torch.load(saved_model_path)['model_state_dict'])
 
     # Set the model to evaluation mode
     model.eval()
 
     # Load the testing data
     # Assuming test_loader provides batches of (inputs, targets)
-    test_loss: float= 0
-    all_predictions = []
-    all_targets = []
+    val_loss: float= 0
+    val_acc: float= 0
 
     with torch.inference_mode():
         for batch, (inputs, targets) in enumerate(tqdm(val_loader, "Validating model")):
+            inputs, targets = inputs.to(device), targets.to(device)
             pred = model(inputs)
             loss = criterion(pred, targets)
-            test_loss += loss.item() * inputs.size(0)  # Accumulate the test loss
+            val_loss += loss.item()
 
-            _, predicted = torch.max(pred, 1)
-            all_predictions.extend(predicted.cpu().numpy())
-            all_targets.extend(targets.cpu().numpy())
-
+            pred_labels = pred.argmax(dim=1)
+            val_acc += (pred_labels == targets).sum().item()/len(pred_labels)
     # Calculate the average test loss
-    test_loss /= float(len(val_loader.dataset)) # type: ignore
-    print(f"Val Loss: {test_loss:.4f}")
+    val_loss = val_loss/len(val_loader) # type: ignore
+    print(f"Val Loss: {val_loss:.4f}")
 
     # Calculate accuracy
-    accuracy = accuracy_score(all_targets, all_predictions)
-    print(f"Val Accuracy: {accuracy:.4f}")
+    val_acc = val_acc/len(val_loader)
+    print(f"Val Accuracy: {val_acc:.4f}")
