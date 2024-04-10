@@ -193,3 +193,21 @@ class VIT_b16(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
+    def _get_last_attention(self, x):
+         # Reshape and permute the input tensor
+        x = self.model._process_input(x)
+        n = x.shape[0]
+
+        # Expand the class token to the full batch
+        batch_class_token = self.model.class_token.expand(n, -1, -1)
+        x = torch.cat([batch_class_token, x], dim=1)
+        x = x + self.model.encoder.pos_embedding
+        for i, encoder in enumerate(self.model.encoder.layers):
+            if i < len(self.model.encoder.layers) - 1:
+                x = encoder(x)
+            else:
+            # return attention of the last block
+                x = encoder.ln_1(x)
+                att, weights = encoder.self_attention(x, x, x, average_attn_weights=False, need_weights=True)
+        return att, weights

@@ -210,6 +210,42 @@ def set_seeds(seed: int=42) -> None:
     # Set the seed for CUDA torch operations (ones that happen on the GPU)
     torch.cuda.manual_seed(seed)
 
+def heatmap_l16(image_path: str,
+            model: torch.nn.Module,
+            device: str,
+            image_size: Tuple[int, int] = (224, 224),
+            patch_size: int = 16) -> None:
+
+    original_image = Image.open(image_path)
+    original_width, original_height = original_image.size
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.ToTensor()
+    ])
+    x = transform(original_image).to(device)
+
+    model.to(device)
+    model.eval()
+    att, attention_weights = model._get_last_attention(x.unsqueeze(0))
+    print(attention_weights)
+    print(att)
+
+    attention_weights_resized = transforms.Resize(original_image.size[::-1])(attention_weights)
+    print(attention_weights_resized)
+    attention_weights_resized = torch.mul(attention_weights_resized, 10000)
+    cmap = plt.get_cmap('jet')
+    attention_map = cmap(attention_weights_resized.squeeze().numpy())
+    resized_original_image = original_image.resize((attention_map.shape[1], attention_map.shape[0]))
+
+    overlay = Image.fromarray((attention_map * 255).astype(np.uint8))
+    print(overlay.size)
+    print(resized_original_image.size)
+    blended_image = Image.blend(resized_original_image.convert('RGBA'), overlay.convert('RGBA'), alpha=0.5)
+
+    plt.imshow(blended_image)
+    plt.axis('off')
+    plt.show()
+
 def heatmap_b16(image_path: str,
             model: torch.nn.Module,
             device: str,
