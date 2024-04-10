@@ -44,6 +44,9 @@ class InpaintingDataset:
             os.listdir(self.mask_folder)), "Differing length of input and labels folder"
 
         self.transform: torchvision.transforms.Compose = transform
+
+        self.low_cut: float
+        self.high_cut: float
         if data_set.lower() in ["training", "train"]:
             self.low_cut = 0
             self.high_cut = 0.8
