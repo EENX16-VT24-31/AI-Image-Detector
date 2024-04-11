@@ -45,7 +45,7 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
 
     # Path to base directory GenImage and Selection of which Generators the dataset will consist of
-    ##################################################################### 
+    #####################################################################
     base_path: str = "C:/Kurser/Kandidatarbete/GenImage"
     all_generators = [Generator.ALL]
     sdv1_4_generator = [Generator.SD1_4]
