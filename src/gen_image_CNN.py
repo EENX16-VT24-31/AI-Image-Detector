@@ -58,7 +58,7 @@ if __name__ == "__main__":
     criterion = nn.BCELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01)
     num_epochs = 5
-    best_v_acc = 0
+    best_v_acc = 0.0
 
     # Train the model
     print('Training started')
