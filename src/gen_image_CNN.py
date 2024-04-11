@@ -45,7 +45,7 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
 
     # Path to base directory GenImage and Selection of which Generators the dataset will consist of
-    #####################################################################   
+    ##################################################################### 
     base_path: str = "C:/Kurser/Kandidatarbete/GenImage"
     all_generators = [Generator.ALL]
     sdv1_4_generator = [Generator.SD1_4]
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                 print('Epoch %d/%d, iteration %5d/%5d, loss: %.3f' %
                     (epoch + 1, num_epochs, i + 1, len(dataset.training), running_loss / 1000))
                 running_loss = 0.0
-                
+
         model.eval()
         with torch.no_grad():
             v_correct = 0
