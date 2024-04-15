@@ -14,7 +14,8 @@ if __name__ == "__main__":
 
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
-    model: FCN_resnet50 = FCN_resnet50().to(device)
+    #TODO change back
+    model: FCN_resnet50 = FCN_resnet50(pretrained=True).to(device)
 
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     optimizer: torch.optim.Adam = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)

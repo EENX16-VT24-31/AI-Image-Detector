@@ -6,7 +6,7 @@ from torchvision.transforms import transforms
 from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 
-fileToTest: str = r"C:\Users\erwinia\Pictures\image.png"
+fileToTest: str = r"C:\Users\erwinia\Downloads\simple-close-reflection-600.jpg"
 
 
 def pil_loader(path: str) -> Image.Image:
@@ -46,5 +46,5 @@ if __name__ == "__main__":
     im.imshow(image)
 
     platt_params = get_platt_params()
-    pred.imshow(torch.round(platt_scale(prediction[0][0], platt_params)).to("cpu").detach().numpy())
+    pred.imshow(platt_scale(prediction[0][0], platt_params).to("cpu").detach().numpy())
     plt.show()

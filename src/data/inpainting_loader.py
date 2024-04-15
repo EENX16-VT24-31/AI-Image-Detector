@@ -1,3 +1,4 @@
+import PIL.ImageOps
 import torch
 import torchvision.transforms
 from PIL import Image
@@ -12,6 +13,7 @@ def pil_loader(path: str, mask: bool = False) -> Image.Image:
     with open(path, "rb") as f:
         img: Image.Image = Image.open(f)
         if mask:
+            img = PIL.ImageOps.invert(img)
             return img.convert("1")  # Black and white
         return img.convert("RGB")
 
@@ -57,19 +59,21 @@ class InpaintingDataset:
             self.low_cut = 0.9
             self.high_cut = 1
 
+        self.low_cut_idx: int = math.floor(self.low_cut * len(os.listdir(self.image_folder)))
+        self.high_cut_idx: int = math.floor(self.high_cut * len(os.listdir(self.image_folder)))
+
     def __len__(self) -> int:
-        return len(os.listdir(self.image_folder))
+        return self.high_cut_idx - self.low_cut_idx
 
     def __iter__(self):
-        low_cut_idx: int = math.floor(self.low_cut * len(self))
-        high_cut_idx: int = math.floor(self.high_cut * len(self))
         images: list[str] = os.listdir(self.image_folder)
         masks: list[str] = os.listdir(self.mask_folder)
 
         data: list[tuple[str, str]] = list(zip(images, masks))
         random.Random(420).shuffle(data)
 
-        data = data[low_cut_idx:high_cut_idx]
+        data = data[self.low_cut_idx:self.high_cut_idx]
+        to_tensor = torchvision.transforms.ToTensor()
 
         image: str
         mask: str
@@ -81,7 +85,7 @@ class InpaintingDataset:
             mask_pil: Image.Image = pil_loader(mask_path, True).resize(image_pil.size)
 
             if self.transform:
-                yield self.transform(image_pil), self.transform(mask_pil)
+                yield self.transform(image_pil)[None], to_tensor(mask_pil)[None]
             else:
                 yield image_pil, mask_pil
 

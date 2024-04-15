@@ -64,7 +64,8 @@ def get_platt_params(model: nn.Module | None = None, val_loader: DataLoader | No
             with torch.no_grad():
                 inputs, labels = inputs.to(device), labels.to(device)
                 outputs: torch.Tensor = model(inputs)
-                labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
+                if outputs.size() != labels.size():
+                    labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
 
             # Fit platt parameters using model data
             optimizer.zero_grad()
