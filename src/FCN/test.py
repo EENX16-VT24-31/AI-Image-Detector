@@ -24,7 +24,7 @@ if __name__ == "__main__":
     model.eval()
 
     # Load dataset
-    datasets: gen_image.Datasets
+    datasets: gen_image.Datasets | reddit.Datasets
     if FULL_IMAGE_TEST:
         transform = transforms.Compose([
             transforms.ToTensor(),
