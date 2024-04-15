@@ -1,9 +1,8 @@
-VALIDATION_PERCENTAGE = 0.1
-
 from torch.utils.data import Subset
 from torchvision.datasets import ImageFolder
 from torchvision import transforms
 
+VALIDATION_PERCENTAGE = 0.1
 class Datasets:
     def __init__(self, path):
         transform: transforms.Compose = transforms.Compose([
