@@ -42,7 +42,7 @@ for image_name in os.listdir(image_dir):
     if not os.path.exists(mask_path):  # Skip if the corresponding mask does not exist
         continue
 
-    alreadyThere = os.path.join("E:\Desktop\images and masks\inpainting",f"{image_name}Inpainted.png")
+    alreadyThere = os.path.join("E:/Desktop/images and masks/inpainting",f"{image_name}Inpainted.png")
     if os.path.isfile(alreadyThere):
         print(f"File: {image_name} skipped, already processed ")
         continue
@@ -59,3 +59,4 @@ for image_name in os.listdir(image_dir):
     output_image.save(output_path)
 
     print(f"Processed and saved: {output_path}")
+    

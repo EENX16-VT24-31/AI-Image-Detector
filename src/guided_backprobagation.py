@@ -60,7 +60,7 @@ class GuidedBackprop():
 
         input_image.requires_grad_(True)
             # Forward
-        model_output = self.model(input_image) 
+        model_output = self.model(input_image)
         print('Forward pass executed.')
         print('Model output shape:', model_output.shape)
         # We need to ensure the output is a scalar for binary classification
@@ -73,7 +73,6 @@ class GuidedBackprop():
         print("Logits shape: ", model_output.shape)
         print("Logits data type: ", model_output.dtype)
         print("Logits range: min=", model_output.min().item(), ", max=", model_output.max().item())
-        
 
 
         # Backward pass

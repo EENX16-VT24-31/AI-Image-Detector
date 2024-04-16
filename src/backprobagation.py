@@ -5,8 +5,6 @@ Created on Thu Oct 26 11:19:58 2017
 """
 import torch
 
-import torch.nn.functional as F
-
 from misc_functions import get_params, convert_to_grayscale, save_gradient_images
 
 
@@ -63,3 +61,4 @@ if __name__ == '__main__':
     # Save grayscale gradients
     save_gradient_images(grayscale_vanilla_grads, file_name_to_export + '_Vanilla_BP_gray')
     print('Vanilla backprop completed')
+    

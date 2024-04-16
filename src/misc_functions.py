@@ -12,7 +12,6 @@ from matplotlib import pyplot as plt
 
 import torch
 from torch.autograd import Variable
-from torchvision import models
 from model import BinaryResNet50NotPreTrained
 
 
@@ -286,7 +285,8 @@ def get_params(example_index):
 
     # Initialize the model
     model = BinaryResNet50NotPreTrained()
-    checkpoint = torch.load('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/ResNet50_SDv14.pth', map_location='cpu')
+    checkpoint = torch.load('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/ResNet50_SDv14.pth'
+                            , map_location='cpu')
     # Remove 'resnet50.' prefix from the checkpoint keys
     # adjusted_checkpoint = {k.replace('resnet50.', ''): v for k, v in checkpoint.items()}
     model.load_state_dict(checkpoint)

@@ -1,6 +1,5 @@
 from torch import nn
 from torchvision import models  # type: ignore
-import torch.nn.functional as F
 
 # Model definition and model utilities
 
