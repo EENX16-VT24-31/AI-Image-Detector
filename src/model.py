@@ -13,4 +13,4 @@ class BinaryResNet50NotPreTrained(nn.Module):
         self.resnet50.fc = nn.Linear(num_features, 1)
 
     def forward(self, x):
-        return F.sigmoid(self.resnet50(x))
+        return self.resnet50(x)

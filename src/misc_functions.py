@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import torch
 from torch.autograd import Variable
 from torchvision import models
-#from model import BinaryResNet50NotPreTrained
+from model import BinaryResNet50NotPreTrained
 
 
 def convert_to_grayscale(im_as_arr):
@@ -49,8 +49,6 @@ def save_gradient_images(gradient, file_name):
     gradient /= gradient.max()
     # Save image
     path_to_file = os.path.join('../results', file_name + '.png')
-    print(file_name)
-    print(path_to_file)
     save_image(gradient, path_to_file)
 
 
@@ -269,7 +267,7 @@ def get_params(example_index):
         pretrained_model(Pytorch model): Model to use for the operations
     """
     # A list with possible input images
-    example_list = (('C:\\Users\\ololi\\OneDrive\\Pictures\\EyIkv3vXIAYyZb6.jpg', 0),
+    example_list = (('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/00003716.png', 0),
                     ('../file_path/name.png', 0),
                     ('../file_path/name.png', 0))
     img_path = example_list[example_index][0]
@@ -286,9 +284,15 @@ def get_params(example_index):
     #checkpoint = torch.load('model/resnet50model.pth')
     #pretrained_model.load_state_dict(checkpoint)
 
-    pretrained_model = models.resnet50(pretrained=True)
+    # Initialize the model
+    model = BinaryResNet50NotPreTrained()
+    checkpoint = torch.load('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/ResNet50_SDv14.pth', map_location='cpu')
+    # Remove 'resnet50.' prefix from the checkpoint keys
+    # adjusted_checkpoint = {k.replace('resnet50.', ''): v for k, v in checkpoint.items()}
+    model.load_state_dict(checkpoint)
+
     return (original_image,
             prep_img,
             target_class,
             file_name_to_export,
-            pretrained_model)
+            model)

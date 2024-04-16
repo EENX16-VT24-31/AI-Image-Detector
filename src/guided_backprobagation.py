@@ -1,5 +1,6 @@
 import torch
 from torch.nn import ReLU
+import torch.nn.functional as F
 
 from misc_functions import (get_params,
                             convert_to_grayscale,
@@ -25,7 +26,7 @@ class GuidedBackprop():
 
         # Register hook to the first layer
         first_layer = list(self.model.children())[0]
-        first_layer.register_backward_hook(hook_function)
+        first_layer.register_full_backward_hook(hook_function)
 
     def update_relus(self):
         """
@@ -44,30 +45,68 @@ class GuidedBackprop():
 
     def generate_gradients(self, input_image, target_class):
         # Forward pass
-        model_output = self.model(input_image)
+        #model_output = self.model(input_image)
         #print("Model output:", model_output)
         # Zero gradients
-        self.model.zero_grad()
-        assert target_class < model_output.size()[-1], "Target class out of range."
+        #self.model.zero_grad()
+        #assert target_class < model_output.size()[-1], "Target class out of range."
         # Target for backprop
-        one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
-        one_hot_output[0][target_class] = 1
-        one_hot_output = one_hot_output.to(model_output.device)
+        #one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
+        #one_hot_output[0][target_class] = 1
+        #one_hot_output = one_hot_output.to(model_output.device)
 
         # Backward pass
-        model_output.backward(gradient=one_hot_output)
+        #model_output.backward(gradient=one_hot_output)
 
-        # Check if gradients exist and are not all zero
-        if self.gradients is not None:
-            #print("Gradients captured:", self.gradients)
-            # Check for nonzero gradients
-            if not torch.any(self.gradients):
-                print("No gradients were captured for the target class.")
-            gradients_as_arr = self.gradients.data.cpu().numpy()[0]
-            return gradients_as_arr
+        input_image.requires_grad_(True)
+            # Forward
+        model_output = self.model(input_image) 
+        print('Forward pass executed.')
+        print('Model output shape:', model_output.shape)
+        # We need to ensure the output is a scalar for binary classification
+        # In binary classification, target_class is usually 0 or 1
+        self.model.zero_grad()
+
+
+        model_output = self.model(input_image)
+        print("Logits: ", model_output)
+        print("Logits shape: ", model_output.shape)
+        print("Logits data type: ", model_output.dtype)
+        print("Logits range: min=", model_output.min().item(), ", max=", model_output.max().item())
+        
+
+
+        # Backward pass
+        target = torch.tensor([[float(target_class)]], requires_grad=False)
+
+        print("Target labels: ", target)
+        print("Target data type: ", target.dtype)
+        print('Target shape:', target.shape)
+        # We use binary_cross_entropy_with_logits to create a scalar loss
+        # as it expects the raw scores without sigmoid applied.
+        loss = F.binary_cross_entropy_with_logits(model_output, target)
+        print('Loss computed:', loss)
+        loss.backward()
+
+        print('Backward pass executed.')
+        print('Gradients captured:', self.gradients is not None)
+        for name, param in self.model.named_parameters():
+            if param.grad is not None:
+                print(name, "Gradient max:", param.grad.max().item(), "Gradient min:", param.grad.min().item())
         else:
-            print("No gradients have been captured.")
-            return None
+            print(name, "No gradient")
+        if prep_img.grad is not None:
+            print('Input image gradients captured:', prep_img.grad.size())
+            # Now we know we have gradients, ensure they are not zero
+            if not torch.any(prep_img.grad):
+                print('Gradients are zero. There might be an issue with the loss or backward pass.')
+        else:
+            print('No gradients in input image.')
+        print('Gradients shape:', self.gradients.shape)
+        gradients_as_arr = self.gradients.data.numpy()[0]
+        print('Gradients as array shape:', gradients_as_arr.shape)
+        return gradients_as_arr
+
 
 
 if __name__ == '__main__':
