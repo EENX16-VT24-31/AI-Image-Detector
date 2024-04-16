@@ -1,6 +1,5 @@
 from torch import nn
 from torchvision import models  # type: ignore
-import torch.nn.functional as F
 
 # Model definition and model utilities
 
@@ -13,4 +12,4 @@ class BinaryResNet50PreTrained(nn.Module):
         self.resnet50.fc = nn.Linear(num_features, 1)
 
     def forward(self, x):
-        return F.sigmoid(self.resnet50(x))
+        return self.resnet50(x)

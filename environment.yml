@@ -9,6 +9,7 @@ dependencies:
   - mypy
   - pillow
   - torchvision
-  - scikit-learn
-  - matplotlib
-prefix: C:\Users\maxsj\anaconda3\envs\KandidatENV
+  - tqdm
+  - conda-forge::grad-cam
+prefix: /home/erwinia/miniconda3/envs/KandidatENV
+
