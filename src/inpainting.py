@@ -59,4 +59,3 @@ for image_name in os.listdir(image_dir):
     output_image.save(output_path)
 
     print(f"Processed and saved: {output_path}")
-    
