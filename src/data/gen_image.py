@@ -5,7 +5,7 @@ from torchvision import transforms, datasets
 from enum import Enum
 import os.path
 
-from data.config import IMAGE_SIZE
+from src.data.config import IMAGE_SIZE
 
 
 class Generator(Enum):
