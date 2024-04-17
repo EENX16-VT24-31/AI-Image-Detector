@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import torchvision
+from src.VIT.config import LOAD_PATH
 
 # Hyperparameters
 patch_size: int= 16
@@ -8,7 +10,7 @@ hidden_dim: int= embedding_dim*4
 n_channels: int= 3
 num_heads: int= 12
 num_encoders: int= 12
-dropout: float= 0.2
+dropout: float= 0.0
 num_classes: int= 2
 size: int= 224
 batch_size: int= 32
@@ -63,7 +65,7 @@ class AttentionBlock(nn.Module):
     def __init__(self, embedding_dim: int,
                  hidden_dim: int,
                  num_heads: int,
-                 dropout: float=0.03):
+                 dropout: float=0.00):
         """
         Uses multi head attention and multi layer perceptron on the input to get the attentions.
         Args:
@@ -165,3 +167,47 @@ class VisionTransformer(nn.Module):
 
         # Perform classification prediction
         return self.mlp_head(x[0])
+
+
+
+class VIT_b16(nn.Module):
+    def __init__(self, pretrained=False) -> None:
+        super(VIT_b16, self).__init__()
+        weights = torchvision.models.ViT_L_16_Weights
+        num_classes: int=2
+        self.model = torchvision.models.vit_l_16(weights=weights)
+
+        for params in self.model.parameters():
+            params.requires_grad=False
+
+        self.model.heads = nn.Sequential(nn.Linear(self.model.hidden_dim, num_classes))
+
+        if pretrained:
+            if torch.cuda.is_available():
+                state_dict = torch.load(LOAD_PATH)
+            else:
+                state_dict = torch.load(LOAD_PATH, map_location=torch.device('cpu'))
+            for key in list(state_dict.keys()):
+                state_dict[key.replace('model.', '')] = state_dict.pop(key)
+            self.model.load_state_dict(state_dict=state_dict)
+
+    def forward(self, x):
+        return self.model(x)
+
+    def _get_last_attention(self, x):
+         # Reshape and permute the input tensor
+        x = self.model._process_input(x)
+        n = x.shape[0]
+
+        # Expand the class token to the full batch
+        batch_class_token = self.model.class_token.expand(n, -1, -1)
+        x = torch.cat([batch_class_token, x], dim=1)
+        x = x + self.model.encoder.pos_embedding
+        for i, encoder in enumerate(self.model.encoder.layers):
+            if i < len(self.model.encoder.layers) - 1:
+                x = encoder(x)
+            else:
+            # return attention of the last block
+                x = encoder.ln_1(x)
+                att, weights = encoder.self_attention(x, x, x, need_weights=True)
+        return att, weights

@@ -1,17 +1,17 @@
 import torch
-from datasets import create_loaders
-from vit_helper import train, validate
-from utils import pred_and_plot_image, heatmap
-from visiontransformer import VisionTransformer
-from manual_transforms import create_transform
+from src.VIT.datasets import create_loaders
+from src.VIT.vit_helper import train, validate
+from src.VIT.utils import pred_and_plot_image, heatmap_l16, heatmap_b16
+from src.VIT.visiontransformer import VIT_b16
+from src.VIT.manual_transforms import create_transform
 
 
 # Hyperparameters
-lr: float= 0.05
+lr: float= 0.1
 epochs: int= 1
-tt_size: int= 100
-val_size: int= 100
-weight_decay: float= 0.03
+tt_size: int= 10
+val_size: int= 10
+weight_decay: float= 0.00
 
 def train_test(train_path: str,
                val_path: str,
@@ -20,7 +20,7 @@ def train_test(train_path: str,
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    vit = VisionTransformer().to(device)
+    vit = VIT_b16().to(device)
 
     transform = create_transform((224,224))
 
@@ -45,7 +45,7 @@ def train_test(train_path: str,
               epochs=epochs,
               device=device)
 
-    validate(model=vit, val_loader=val_loader, criterion=loss_fn)
+    validate(model=vit, val_loader=val_loader, criterion=loss_fn, device=device)
 
     pred_and_plot_image(model=vit,
                         class_names=classes,
@@ -54,18 +54,17 @@ def train_test(train_path: str,
                         device=device,
                         transform=transform)
 
-    pred_and_plot_image(model=vit,
-                        class_names=classes,
-                        image_path=val_nature_path,
-                        image_size=(244,244),
-                        device=device,
-                        transform=transform)
+#     pred_and_plot_image(model=vit,
+#                         class_names=classes,
+#                         image_path=val_nature_path,
+#                         image_size=(244,244),
+#                         device=device,
+#                         transform=transform)
 
-    heatmap(image_path=val_ai_path,
+    heatmap_b16(image_path=val_ai_path,
             model=vit,
             device=device)
-
-    heatmap(image_path=val_nature_path,
+    heatmap_l16(image_path=val_ai_path,
             model=vit,
             device=device)
 
