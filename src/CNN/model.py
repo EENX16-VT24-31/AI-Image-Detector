@@ -20,4 +20,4 @@ class BinaryResNet50PreTrained(nn.Module):
     def load(self, weight_path):
         pretrained_data: dict[str:float] = torch.load(weight_path)
         weights: dict[str:float] = {key.replace("model.", ""): val for key, val in pretrained_data.items()}
-        self.model.load_state_dict(weights)
+        self.load_state_dict(weights)
