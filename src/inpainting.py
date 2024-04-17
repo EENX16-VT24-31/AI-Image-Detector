@@ -33,7 +33,7 @@ for image_name in os.listdir(image_dir):
         print("No more prompts available.")
         break
 
-    prompt = prompts.pop(0) 
+    prompt = prompts.pop(0)
     image_path = os.path.join(image_dir, image_name)
     mask_name = f"{os.path.splitext(image_name)[0]}-removebg-preview.png"
     mask_path = os.path.join(mask_dir, mask_name)

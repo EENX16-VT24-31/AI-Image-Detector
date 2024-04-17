@@ -72,7 +72,7 @@ class GuidedBackprop():
 
 
 if __name__ == '__main__':
-    target_example = 0 
+    target_example = 0
     (original_image, prep_img, target_class, file_name_to_export, pretrained_model) =\
         get_params(target_example)
 
