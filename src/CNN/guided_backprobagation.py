@@ -12,6 +12,7 @@ class GuidedBackprop():
     """
        Produces gradients generated with guided back propagation from the given image
     """
+
     def __init__(self, model):
         self.model = model
         self.gradients = None
@@ -32,12 +33,14 @@ class GuidedBackprop():
         """
             Updates relu activation functions so that it only returns positive gradients
         """
+
         def relu_hook_function(module, grad_in, grad_out):
             """
             If there is a negative gradient, changes it to zero
             """
             if isinstance(module, ReLU):
                 return (torch.clamp(grad_in[0], min=0.0),)
+
         # Loop through layers, hook up ReLUs with relu_hook_function
         for module in self.model.modules():
             if isinstance(module, ReLU):
@@ -45,21 +48,21 @@ class GuidedBackprop():
 
     def generate_gradients(self, input_image, target_class):
         # Forward pass
-        #model_output = self.model(input_image)
-        #print("Model output:", model_output)
+        # model_output = self.model(input_image)
+        # print("Model output:", model_output)
         # Zero gradients
-        #self.model.zero_grad()
-        #assert target_class < model_output.size()[-1], "Target class out of range."
+        # self.model.zero_grad()
+        # assert target_class < model_output.size()[-1], "Target class out of range."
         # Target for backprop
-        #one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
-        #one_hot_output[0][target_class] = 1
-        #one_hot_output = one_hot_output.to(model_output.device)
+        # one_hot_output = torch.FloatTensor(1, model_output.size()[-1]).zero_()
+        # one_hot_output[0][target_class] = 1
+        # one_hot_output = one_hot_output.to(model_output.device)
 
         # Backward pass
-        #model_output.backward(gradient=one_hot_output)
+        # model_output.backward(gradient=one_hot_output)
 
         input_image.requires_grad_(True)
-            # Forward
+        # Forward
         model_output = self.model(input_image)
         print('Forward pass executed.')
         print('Model output shape:', model_output.shape)
@@ -67,13 +70,11 @@ class GuidedBackprop():
         # In binary classification, target_class is usually 0 or 1
         self.model.zero_grad()
 
-
         model_output = self.model(input_image)
         print("Logits: ", model_output)
         print("Logits shape: ", model_output.shape)
         print("Logits data type: ", model_output.dtype)
         print("Logits range: min=", model_output.min().item(), ", max=", model_output.max().item())
-
 
         # Backward pass
         target = torch.tensor([[float(target_class)]], requires_grad=False)
@@ -107,10 +108,9 @@ class GuidedBackprop():
         return gradients_as_arr
 
 
-
 if __name__ == '__main__':
     target_example = 0  # Snake
-    (original_image, prep_img, target_class, file_name_to_export, pretrained_model) =\
+    (original_image, prep_img, target_class, file_name_to_export, pretrained_model) = \
         get_params(target_example)
 
     # Guided backprop

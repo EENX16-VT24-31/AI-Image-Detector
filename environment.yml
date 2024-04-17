@@ -11,5 +11,6 @@ dependencies:
   - torchvision
   - tqdm
   - conda-forge::grad-cam
+  - cv2
 prefix: /home/erwinia/miniconda3/envs/KandidatENV
 

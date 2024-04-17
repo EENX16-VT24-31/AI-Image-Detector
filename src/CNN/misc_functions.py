@@ -12,7 +12,8 @@ from matplotlib import pyplot as plt
 
 import torch
 from torch.autograd import Variable
-from model import BinaryResNet50NotPreTrained
+from src.CNN.model import BinaryResNet50PreTrained
+from src.CNN.config import MODEL_PATH
 
 
 def convert_to_grayscale(im_as_arr):
@@ -65,13 +66,13 @@ def save_class_activation_images(org_img, activation_map, file_name):
     # Grayscale activation map
     heatmap, heatmap_on_image = apply_colormap_on_image(org_img, activation_map, 'hsv')
     # Save colored heatmap
-    path_to_file = os.path.join('../results', file_name+'_Cam_Heatmap.png')
+    path_to_file = os.path.join('../results', file_name + '_Cam_Heatmap.png')
     save_image(heatmap, path_to_file)
     # Save heatmap on iamge
-    path_to_file = os.path.join('../results', file_name+'_Cam_On_Image.png')
+    path_to_file = os.path.join('../results', file_name + '_Cam_On_Image.png')
     save_image(heatmap_on_image, path_to_file)
     # SAve grayscale heatmap
-    path_to_file = os.path.join('../results', file_name+'_Cam_Grayscale.png')
+    path_to_file = os.path.join('../results', file_name + '_Cam_Grayscale.png')
     save_image(activation_map, path_to_file)
 
 
@@ -79,8 +80,8 @@ def apply_colormap_on_image(org_im, activation, colormap_name):
     """
         Apply heatmap on image
     Args:
-        org_img (PIL img): Original image
-        activation_map (numpy arr): Activation map (grayscale) 0-255
+        org_im (PIL img): Original image
+        activation (numpy arr): Activation map (grayscale) 0-255
         colormap_name (str): Name of the colormap
     """
     # Get colormap
@@ -89,8 +90,8 @@ def apply_colormap_on_image(org_im, activation, colormap_name):
     # Change alpha channel in colormap to make sure original image is displayed
     heatmap = copy.copy(no_trans_heatmap)
     heatmap[:, :, 3] = 0.4
-    heatmap = Image.fromarray((heatmap*255).astype(np.uint8))
-    no_trans_heatmap = Image.fromarray((no_trans_heatmap*255).astype(np.uint8))
+    heatmap = Image.fromarray((heatmap * 255).astype(np.uint8))
+    no_trans_heatmap = Image.fromarray((no_trans_heatmap * 255).astype(np.uint8))
 
     # Apply heatmap on image
     heatmap_on_image = Image.new("RGBA", org_im.size)
@@ -105,7 +106,7 @@ def apply_heatmap(R, sx, sy):
 
         This is (so far) only used for LRP
     """
-    b = 10*((np.abs(R)**3.0).mean()**(1.0/3))
+    b = 10 * ((np.abs(R) ** 3.0).mean() ** (1.0 / 3))
     my_cmap = plt.cm.seismic(np.arange(plt.cm.seismic.N))
     my_cmap[:, 0:3] *= 0.85
     my_cmap = ListedColormap(my_cmap)
@@ -123,7 +124,7 @@ def format_np_output(np_arr):
         It converts all the outputs to the same format which is 3xWxH
         with using sucecssive if clauses.
     Args:
-        im_as_arr (Numpy array): Matrix of shape 1xWxH or WxH or 3xWxH
+        np_arr (Numpy array): Matrix of shape 1xWxH or WxH or 3xWxH
     """
     # Phase/Case 1: The np arr only has 2 dimensions
     # Result: Add a dimension at the beginning
@@ -140,7 +141,7 @@ def format_np_output(np_arr):
     # Phase/Case 4: NP arr is normalized between 0-1
     # Result: Multiply with 255 and change type to make it saveable by PIL
     elif np.max(np_arr) <= 1:
-        np_arr = (np_arr*255).astype(np.uint8)
+        np_arr = (np_arr * 255).astype(np.uint8)
     return np_arr
 
 
@@ -179,7 +180,7 @@ def preprocess_image(pil_im, resize_im=True):
         Processes image for CNNs
 
     Args:
-        PIL_img (PIL_img): PIL Image or numpy array to process
+        pil_im (PIL_img): PIL Image or numpy array to process
         resize_im (bool): Resize to 224 or not
     returns:
         im_as_var (torch variable): Variable that contains processed float tensor
@@ -224,7 +225,7 @@ def recreate_image(im_as_var):
         recreated_im (numpy arr): Recreated image in array
     """
     reverse_mean = [-0.485, -0.456, -0.406]
-    reverse_std = [1/0.229, 1/0.224, 1/0.225]
+    reverse_std = [1 / 0.229, 1 / 0.224, 1 / 0.225]
     recreated_im = copy.copy(im_as_var.data.numpy()[0])
     for c in range(3):
         recreated_im[c] /= reverse_std[c]
@@ -271,22 +272,21 @@ def get_params(example_index):
                     ('../file_path/name.png', 0))
     img_path = example_list[example_index][0]
     target_class = example_list[example_index][1]
-    file_name_to_export = img_path[img_path.rfind('/')+1:img_path.rfind('.')]
+    file_name_to_export = img_path[img_path.rfind('/') + 1:img_path.rfind('.')]
     # Read image
     original_image = Image.open(img_path).convert('RGB')
     # Process image
     prep_img = preprocess_image(original_image)
 
     # Define model
-    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    #pretrained_model = BinaryResNet50NotPreTrained().to(device)
-    #checkpoint = torch.load('model/resnet50model.pth')
-    #pretrained_model.load_state_dict(checkpoint)
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # pretrained_model = BinaryResNet50NotPreTrained().to(device)
+    # checkpoint = torch.load('model/resnet50model.pth')
+    # pretrained_model.load_state_dict(checkpoint)
 
     # Initialize the model
-    model = BinaryResNet50NotPreTrained()
-    checkpoint = torch.load('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/ResNet50_SDv14.pth'
-                            , map_location='cpu')
+    model = BinaryResNet50PreTrained()
+    checkpoint = torch.load(MODEL_PATH, map_location='cpu')
     # Remove 'resnet50.' prefix from the checkpoint keys
     # adjusted_checkpoint = {k.replace('resnet50.', ''): v for k, v in checkpoint.items()}
     model.load_state_dict(checkpoint)
