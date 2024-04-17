@@ -280,8 +280,7 @@ def get_params(example_index):
 
     # Initialize the model
     model = BinaryResNet50NotPreTrained()
-    checkpoint = torch.load('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/ResNet50_SDv14.pth'
-                            , map_location='cpu')
+    checkpoint = torch.load(MODEL_PATH, map_location='cpu')
     model.load_state_dict(checkpoint)
 
     return (original_image,
