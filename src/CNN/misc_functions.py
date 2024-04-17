@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 import torch
 from torch.autograd import Variable
-from src.CNN.model import BinaryResNet50PreTrained
+from src.CNN.model2 import BinaryResNet50NotPreTrained
 from src.CNN.config import MODEL_PATH
 
 
