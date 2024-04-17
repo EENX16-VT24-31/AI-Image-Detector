@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         model.eval()
         with torch.no_grad():
-            v_correct: int = 0
+            v_correct: float = 0
             v_total: int = 0
             v_running_loss: float = 0
             v_images: torch.Tensor
