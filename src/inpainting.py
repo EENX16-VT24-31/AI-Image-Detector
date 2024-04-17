@@ -22,7 +22,6 @@ output_dir = "E:/Desktop/images and masks/inpainting"
 with open("E:/Desktop/images and masks/generated_prompts.txt", "r") as file:
     prompts = file.read().splitlines()
 
-#Ensure the output directory exists
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -30,16 +29,16 @@ if not os.path.exists(output_dir):
 for image_name in os.listdir(image_dir):
 
 
-    if not prompts:  # Check if there are no more prompts left
+    if not prompts:
         print("No more prompts available.")
         break
 
-    prompt = prompts.pop(0)  # Get the next prompt and remove it from the list
+    prompt = prompts.pop(0) 
     image_path = os.path.join(image_dir, image_name)
     mask_name = f"{os.path.splitext(image_name)[0]}-removebg-preview.png"
     mask_path = os.path.join(mask_dir, mask_name)
 
-    if not os.path.exists(mask_path):  # Skip if the corresponding mask does not exist
+    if not os.path.exists(mask_path):
         continue
 
     alreadyThere = os.path.join("E:/Desktop/images and masks/inpainting",f"{image_name}Inpainted.png")
