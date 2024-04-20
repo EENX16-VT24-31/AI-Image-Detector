@@ -1,4 +1,4 @@
-name: KandidatENV
+﻿name: KandidatENV
 channels:
   - defaults
 dependencies:

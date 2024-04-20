@@ -1,8 +1,8 @@
-import torch
 from torch.utils.data import DataLoader, random_split, ConcatDataset, Subset
 from torchvision import transforms, datasets
 
 import os.path
+import matplotlib.pyplot as plt
 
 
 class Datasets:
@@ -13,7 +13,7 @@ class Datasets:
     """
 
     def __init__(self, base_path: str, split: tuple[float, float, float],
-                 batch_size: int = 32, num_workers: int | None = os.cpu_count(),
+                 batch_size: int = 32, num_workers: int | None = 1, # os.cpu_count(), #0
                  rgb_mean: tuple[float, float, float] = (0.5, 0.5, 0.5),
                  rgb_std: tuple[float, float, float] = (0.5, 0.5, 0.5)):
         assert sum(split) == 1 and len(split) == 3, "The split parameter should be a list with 3 parameters, summing " \
@@ -26,7 +26,7 @@ class Datasets:
                                                                "between 0 and 1"
 
         self.batch_size: int = batch_size
-        self.num_workers: int = num_workers if num_workers else 4
+        self.num_workers: int = num_workers if num_workers else 1#0
         self.image_size: int = 224  # Should maybe be pulled from some global variable instead
         self.split: tuple[float, float, float] = split
         self.rgb_mean: tuple[float, float, float] = rgb_mean
@@ -65,29 +65,40 @@ class Datasets:
 
 
 # Example Usage
-if __name__ == "__main__":
-    base_path: str = "/media/erwinia/T9/progan_train"
-    split: tuple[float, float, float] = (0.8, 0.1, 0.1)
-    dataset: Datasets = Datasets(base_path, split)
+# if __name__ == "__main__":
+#     base_path: str = "/media/erwinia/T9/progan_train"
+#     split: tuple[float, float, float] = (0.8, 0.1, 0.1)
+#     dataset: Datasets = Datasets(base_path, split)
 
-    i: int
-    images: torch.Tensor
-    labels: torch.Tensor
+#     i: int
+#     images: torch.Tensor
+#     labels: torch.Tensor
 
-    print("Training Labels:")
-    for i, (images, labels) in enumerate(dataset.training):
-        print(labels)
-        if i == 10:
-            break
+#     print("Training Labels:")
+#     for i, (images, labels) in enumerate(dataset.training):
+#         print(labels)
+#         if i == 10:
+#             break
 
-    print("Validation Labels:")
-    for i, (images, labels) in enumerate(dataset.validation):
-        print(labels)
-        if i == 10:
-            break
+#     print("Validation Labels:")
+#     for i, (images, labels) in enumerate(dataset.validation):
+#         print(labels)
+#         if i == 10:
+#             break
 
-    print("Testing Labels:")
-    for i, (images, labels) in enumerate(dataset.testing):
-        print(labels)
-        if i == 10:
-            break
+#     print("Testing Labels:")
+#     for i, (images, labels) in enumerate(dataset.testing):
+#         print(labels)
+#         if i == 10:
+#             break
+
+#Plot some images from the dataset
+def plot_images(set, num_images=10):
+    fig, axes = plt.subplots(1, num_images, figsize=(15, 3))
+    for j, (images, labels) in enumerate(set):
+        for i in range(num_images):
+            image, label = images[i,:,:,:], labels[i]
+            axes[i].imshow(image.permute(1, 2, 0))  # Permute the dimensions for correct display
+            axes[i].set_title("Label: %d" % label)
+            axes[i].axis('off')
+        break
