@@ -25,13 +25,13 @@ if __name__ == "__main__":
     predicted_labels: list[int] = []
     platt_params: torch.Tensor = get_platt_params(model, dataset.validation)
     with torch.no_grad():
-        for (images, labels) in tqdm(dataset.testing):
+        for (images, labels) in tqdm(dataset.testing, "Testing model"):
             try:
                 images, labels = images.to(device), labels.to(device)
                 outputs: torch.Tensor = model(images)
                 predicted: torch.Tensor = torch.round(platt_scale(outputs, platt_params)).long()
-                true_labels.extend(labels.numpy())
-                predicted_labels.extend(predicted.numpy())
+                true_labels.extend(labels.cpu().numpy())
+                predicted_labels.extend(predicted.cpu().numpy())
             except Exception as e:
                 print(f"An error occurred during training: {e}")
                 continue
