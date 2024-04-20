@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 import torch
 from torch.autograd import Variable
-from src.CNN.model import BinaryResNet50PreTrained
+from src.CNN.model2 import BinaryResNet50NotPreTrained
 from src.CNN.config import MODEL_PATH
 
 
@@ -267,8 +267,7 @@ def get_params(example_index):
         pretrained_model(Pytorch model): Model to use for the operations
     """
     # A list with possible input images
-    example_list = (('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/00003716.png', 0),
-                    ('../file_path/name.png', 0),
+    example_list = (('C:/Users/ololi/StudioProjects/AI-Image-Detector/src/EyIkv3vXIAYyZb6.jpg', 0),
                     ('../file_path/name.png', 0))
     img_path = example_list[example_index][0]
     target_class = example_list[example_index][1]
@@ -278,17 +277,10 @@ def get_params(example_index):
     # Process image
     prep_img = preprocess_image(original_image)
 
-    # Define model
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # pretrained_model = BinaryResNet50NotPreTrained().to(device)
-    # checkpoint = torch.load('model/resnet50model.pth')
-    # pretrained_model.load_state_dict(checkpoint)
 
     # Initialize the model
-    model = BinaryResNet50PreTrained()
+    model = BinaryResNet50NotPreTrained()
     checkpoint = torch.load(MODEL_PATH, map_location='cpu')
-    # Remove 'resnet50.' prefix from the checkpoint keys
-    # adjusted_checkpoint = {k.replace('resnet50.', ''): v for k, v in checkpoint.items()}
     model.load_state_dict(checkpoint)
 
     return (original_image,
