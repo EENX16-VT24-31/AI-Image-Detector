@@ -6,35 +6,41 @@ import numpy as np
 from src.data.gen_image import Datasets
 from src.CNN.model import BinaryResNet50PreTrained
 from src.CNN.config import MODEL_PATH, DATA_PATH, GENERATORS
+from src.CNN.calibration import get_platt_params, platt_scale
 
-dataset: Datasets = Datasets(DATA_PATH, generators=GENERATORS)
-device: str = "cuda" if torch.cuda.is_available() else "cpu"
+if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
 
-model: BinaryResNet50PreTrained = BinaryResNet50PreTrained().to(device)
-model.load(MODEL_PATH)  # Load stored weights
+    dataset: Datasets = Datasets(DATA_PATH, generators=GENERATORS)
+    device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Evaluate the model on the testdata and calculate confusion matrix
-print("Evaluation on testset starts")
-model.eval()
-true_labels: list[int] = []
-predicted_labels: list[int] = []
-with torch.no_grad():
-    for (images, labels) in tqdm(dataset.testing):
-        try:
-            images, labels = images.to(device), labels.to(device)
-            outputs: torch.Tensor = model(images)
-            predicted: torch.Tensor = torch.round(outputs).long()
-            true_labels.extend(labels.numpy())
-            predicted_labels.extend(predicted.numpy())
-        except Exception as e:
-            print(f"An error occurred during training: {e}")
-            continue
+    model: BinaryResNet50PreTrained = BinaryResNet50PreTrained().to(device)
+    model.load(MODEL_PATH)  # Load stored weights
 
-# Print Confusion Matrix
-conf_matrix: list[list[float]] = confusion_matrix(true_labels, predicted_labels)
-print("Confusion Matrix:")
-print(conf_matrix)
+    # Evaluate the model on the testdata and calculate confusion matrix
+    print("Evaluation on testset starts")
+    model.eval()
+    true_labels: list[int] = []
+    predicted_labels: list[int] = []
+    platt_params: torch.Tensor = get_platt_params(model, dataset.validation)
+    with torch.no_grad():
+        for (images, labels) in tqdm(dataset.testing):
+            try:
+                images, labels = images.to(device), labels.to(device)
+                outputs: torch.Tensor = model(images)
+                predicted: torch.Tensor = torch.round(platt_scale(outputs, platt_params)).long()
+                true_labels.extend(labels.numpy())
+                predicted_labels.extend(predicted.numpy())
+            except Exception as e:
+                print(f"An error occurred during training: {e}")
+                continue
 
-# Calculate Accuracy
-accuracy: float = np.trace(conf_matrix) / np.sum(conf_matrix)
-print("Accuracy:", accuracy)
+    # Print Confusion Matrix
+    conf_matrix: list[list[float]] = confusion_matrix(true_labels, predicted_labels)
+    print("Confusion Matrix:")
+    print(conf_matrix)
+
+    # Calculate Accuracy
+    accuracy: float = np.trace(conf_matrix) / np.sum(conf_matrix)
+    print("Accuracy:", accuracy)
