@@ -6,7 +6,8 @@ from torchvision.transforms import transforms
 from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 
-fileToTest: str = r"C:\GenImage\imagenet_midjourney\val\ai\3_midjourney_88.png"
+fileToTest: str = r"C:\Users\erwinia\PycharmProjects\redditScrape" \
+                  r"\reddit-wallpapers\reddit\dalle2\1aoa7mi 19 Which man cave you choosing_ 🚪.jpg"
 
 
 def pil_loader(path: str) -> Image.Image:
