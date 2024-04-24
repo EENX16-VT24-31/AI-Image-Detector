@@ -1,9 +1,11 @@
 import torch
 from src.VIT.datasets import create_loaders
 from src.VIT.vit_helper import train, validate
-from src.VIT.utils import pred_and_plot_image, heatmap_l16, heatmap_b16
+from src.VIT.utils import pred_and_plot_image, heatmap_b16
 from src.VIT.visiontransformer import VIT_b16
 from src.VIT.manual_transforms import create_transform
+from src.VIT.calibration import get_platt_params
+
 
 
 # Hyperparameters
@@ -17,6 +19,9 @@ def train_test(train_path: str,
                val_path: str,
                val_ai_path: str,
                val_nature_path: str) -> None:
+
+#     platt = torch.load(PLATT_PATH)
+#     print(platt)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -64,9 +69,9 @@ def train_test(train_path: str,
     heatmap_b16(image_path=val_ai_path,
             model=vit,
             device=device)
-    heatmap_l16(image_path=val_ai_path,
-            model=vit,
-            device=device)
+
+
+    print(get_platt_params(model=vit, val_loader=test_loader))
 
 # Example usage of train_test
 if __name__ == "__main__":

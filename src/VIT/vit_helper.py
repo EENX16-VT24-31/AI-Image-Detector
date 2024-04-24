@@ -2,8 +2,6 @@ from typing import Tuple
 import torch
 from tqdm import tqdm
 
-
-
 def _train_step(model: torch.nn.Module,
                dataloader: torch.utils.data.DataLoader,
                criterion: torch.nn.Module,
@@ -164,7 +162,7 @@ def validate(model: torch.nn.Module,
     val_acc: float= 0
 
     with torch.inference_mode():
-        for batch, (inputs, targets) in enumerate(tqdm(val_loader, "Validating model")):
+        for batch, (inputs, targets) in enumerate(tqdm(val_loader, "Testing model")):
             inputs, targets = inputs.to(device), targets.to(device)
             pred = model(inputs)
             loss = criterion(pred, targets)
