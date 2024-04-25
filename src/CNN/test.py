@@ -18,7 +18,8 @@ if __name__ == "__main__":
     import multiprocessing
     multiprocessing.freeze_support()
 
-    dataset: gen_image.Datasets | reddit.Datasets | inpainting_loader.InpaintingDataset
+    dataset: gen_image.Datasets | reddit.Datasets
+    inpainting_dataset: inpainting_loader.InpaintingDataset
     if USE_REDDIT:
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -27,7 +28,7 @@ if __name__ == "__main__":
         ])
         dataset = reddit.Datasets(REDDIT_PATH, transform=transform)
     elif USE_INPAINTING:
-        dataset = inpainting_loader.InpaintingDataset(INPAINTING_PATH, "test")
+        inpainting_dataset = inpainting_loader.InpaintingDataset(INPAINTING_PATH, "test")
     elif FULL_IMAGE_TEST:
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -58,7 +59,7 @@ if __name__ == "__main__":
         test_set = dataset.testing
         inpainting_transform = None
     else:
-        test_set = dataset
+        test_set = inpainting_dataset
         inpainting_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
