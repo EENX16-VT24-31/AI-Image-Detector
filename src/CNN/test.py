@@ -1,4 +1,5 @@
 import torch
+from torch.utils.data import Subset, DataLoader
 from tqdm import tqdm
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -55,6 +56,7 @@ if __name__ == "__main__":
     else:
         platt_params = get_platt_params()
 
+    test_set: DataLoader | Subset | inpainting_loader.InpaintingDataset
     if not USE_INPAINTING:
         test_set = dataset.testing
         inpainting_transform = None
