@@ -1,3 +1,5 @@
+from typing import Generator
+
 import PIL.ImageOps
 import torch
 import torchvision.transforms
@@ -65,7 +67,7 @@ class InpaintingDataset:
     def __len__(self) -> int:
         return self.high_cut_idx - self.low_cut_idx
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         images: list[str] = os.listdir(self.image_folder)
         masks: list[str] = os.listdir(self.mask_folder)
 

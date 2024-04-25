@@ -6,7 +6,7 @@ VALIDATION_PERCENTAGE = 0.1
 
 
 class Datasets:
-    def __init__(self, path, transform=None):
+    def __init__(self, path: str, transform: transforms.Compose | None = None):
         if not transform:
             transform: transforms.Compose = transforms.Compose([
                 transforms.ToTensor(),

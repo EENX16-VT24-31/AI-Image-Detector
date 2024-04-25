@@ -18,7 +18,6 @@ if __name__ == "__main__":
     import multiprocessing
     multiprocessing.freeze_support()
 
-    dataset: gen_image.Datasets | reddit.Datasets | inpainting_loader.InpaintingDataset
     if USE_REDDIT:
         transform = transforms.Compose([
             transforms.ToTensor(),
