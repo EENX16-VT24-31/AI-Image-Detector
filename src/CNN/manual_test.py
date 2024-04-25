@@ -6,7 +6,8 @@ from torchvision.transforms import transforms
 from src.CNN.model import BinaryResNet50PreTrained
 from src.CNN.config import MODEL_PATH
 
-fileToTest: str = r"F:\GenImage\imagenet_ai_0419_sdv4\val\ai\000_sdv4_00035.png"
+fileToTest: str = \
+    r"C:\Users\erwinia\PycharmProjects\redditScrape\reddit-wallpapers\reddit\dalle2\13bj1cx 03 Mario eating pasta.jpg"
 
 
 def pil_loader(path: str) -> Image.Image:

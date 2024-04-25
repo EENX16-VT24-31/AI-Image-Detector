@@ -6,7 +6,8 @@ from torchvision.transforms import transforms
 from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 
-fileToTest: str = r"C:\Users\erwinia\Downloads\simple-close-reflection-600.jpg"
+fileToTest: str = r"C:\Users\erwinia\PycharmProjects\redditScrape" \
+                  r"\reddit-wallpapers\reddit\dalle2\1aoa7mi 19 Which man cave you choosing_ 🚪.jpg"
 
 
 def pil_loader(path: str) -> Image.Image:
@@ -46,5 +47,9 @@ if __name__ == "__main__":
     im.imshow(image)
 
     platt_params = get_platt_params()
-    pred.imshow(platt_scale(prediction[0][0], platt_params).to("cpu").detach().numpy())
+    pred_img = platt_scale(prediction[0][0], platt_params).to("cpu").detach().numpy()
+    im_pred = pred.imshow(pred_img, vmin=0, vmax=1)
+
+    plt.subplots_adjust(wspace=0.3)
+    fig.colorbar(im_pred, ax=pred, shrink=0.5)
     plt.show()

@@ -8,7 +8,7 @@ from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 from src.data import gen_image, reddit
 
-FULL_IMAGE_TEST: bool = False
+FULL_IMAGE_TEST: bool = True
 USE_REDDIT: bool = False
 assert [FULL_IMAGE_TEST, USE_REDDIT].count(True) <= 1
 
@@ -89,6 +89,7 @@ if __name__ == "__main__":
 
     # Print test data
     m = metric.compute()
+    print("Confusion matrix", m)
     accuracy: torch.Tensor = m.trace() / m.sum()
     recall: torch.Tensor = m[0, 0].item() / m[0, :].sum()
     precision: torch.Tensor = m[0, 0].item() / m[:, 0].sum()

@@ -3,12 +3,15 @@ from torchvision.datasets import ImageFolder
 from torchvision import transforms
 
 VALIDATION_PERCENTAGE = 0.1
+
+
 class Datasets:
-    def __init__(self, path):
-        transform: transforms.Compose = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-        ])
+    def __init__(self, path: str, transform: transforms.Compose | None = None):
+        if not transform:
+            transform = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ])
 
         image_folder: ImageFolder
         try:

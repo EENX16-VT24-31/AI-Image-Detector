@@ -1,3 +1,5 @@
+from typing import Generator
+
 import PIL.ImageOps
 import torch
 import torchvision.transforms
@@ -51,12 +53,12 @@ class InpaintingDataset:
         self.high_cut: float
         if data_set.lower() in ["training", "train"]:
             self.low_cut = 0
-            self.high_cut = 0.8
+            self.high_cut = 0.6
         elif data_set.lower() in ["validation", "val"]:
-            self.low_cut = 0.8
-            self.high_cut = 0.9
+            self.low_cut = 0.6
+            self.high_cut = 0.8
         else:
-            self.low_cut = 0.9
+            self.low_cut = 0.8
             self.high_cut = 1
 
         self.low_cut_idx: int = math.floor(self.low_cut * len(os.listdir(self.image_folder)))
@@ -65,7 +67,7 @@ class InpaintingDataset:
     def __len__(self) -> int:
         return self.high_cut_idx - self.low_cut_idx
 
-    def __iter__(self):
+    def __iter__(self) -> Generator:
         images: list[str] = os.listdir(self.image_folder)
         masks: list[str] = os.listdir(self.mask_folder)
 

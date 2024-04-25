@@ -2,11 +2,13 @@ import math
 
 import torch
 from torch import nn, optim
+from torch.utils.data import Subset
 from tqdm import tqdm
 
 from src.CNN.config import DATA_PATH, PLATT_PATH, MODEL_PATH
 from src.CNN.model import BinaryResNet50PreTrained
 from src.data.gen_image import Datasets, Generator, DataLoader
+from src.data.inpainting_loader import InpaintingDataset
 
 
 def platt_scale(logits: torch.Tensor, params: torch.Tensor) -> torch.Tensor:
@@ -25,7 +27,8 @@ def platt_scale(logits: torch.Tensor, params: torch.Tensor) -> torch.Tensor:
     return logistic(logits)
 
 
-def get_platt_params(model: nn.Module | None = None, val_loader: DataLoader | None = None) -> torch.Tensor:
+def get_platt_params(model: nn.Module | None = None,
+                     val_loader: DataLoader | InpaintingDataset | Subset | None = None) -> torch.Tensor:
     """
     Calculate the two platt parameters for a given model and dataset
     :param model: The model that will be tested, its parameters will not change from this function call,
