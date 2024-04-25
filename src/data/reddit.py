@@ -8,7 +8,7 @@ VALIDATION_PERCENTAGE = 0.1
 class Datasets:
     def __init__(self, path: str, transform: transforms.Compose | None = None):
         if not transform:
-            transform: transforms.Compose = transforms.Compose([
+            transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
