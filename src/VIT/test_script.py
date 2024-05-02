@@ -121,5 +121,5 @@ if __name__ == "__main__":
     #                     device=device
     #                     )
 
-    #heatmap_b16(image_path=AI_IMAGE_PATH, model=model, device=device)
-    #heatmap_b16(image_path=NATURE_IMAGE_PATH, model=model, device=device)
+    heatmap_b16(image_path=AI_IMAGE_PATH, model=model, device=device)
+    heatmap_b16(image_path=NATURE_IMAGE_PATH, model=model, device=device)
