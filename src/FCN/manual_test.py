@@ -6,8 +6,11 @@ from torchvision.transforms import transforms
 from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 
-fileToTest: str = r"C:\Users\erwinia\PycharmProjects\redditScrape" \
-                  r"\reddit-wallpapers\reddit\dalle2\1aoa7mi 19 Which man cave you choosing_ 🚪.jpg"
+real_bird: str = r"C:\GenImage\imagenet_midjourney\val\nature\ILSVRC2012_val_00000747.JPEG"
+ai_bird: str = r"C:\GenImage\imagenet_midjourney\val\ai\10_midjourney_197.png"
+ai_dog: str = r"C:\GenImage\imagenet_ai_0419_sdv4\val\ai\185_sdv4_00039.png"
+real_dog: str = r"C:\GenImage\imagenet_ai_0419_biggan\val\nature\ILSVRC2012_val_00000612.JPEG"
+fileToTest: str = r"I:\inpainting\images\inverted-371--n02486261_8249Inpainted.png"
 
 
 def pil_loader(path: str) -> Image.Image:
@@ -43,13 +46,21 @@ if __name__ == "__main__":
     fig: plt.Figure
     im: plt.Subplot
     pred: plt.Subplot
-    fig, (im, pred) = plt.subplots(1, 2)
-    im.imshow(image)
+    # Plot image and prediction in same figure with adjusted layout
+    plt.rcParams.update({"font.size": 11})
+    fig, (im, pred) = plt.subplots(1, 2, gridspec_kw={'width_ratios': [1, 1.25]})
+
+    real_im = im.imshow(image)
+    im.set_title("AI Cat with Real background")
 
     platt_params = get_platt_params()
     pred_img = platt_scale(prediction[0][0], platt_params).to("cpu").detach().numpy()
     im_pred = pred.imshow(pred_img, vmin=0, vmax=1)
 
-    plt.subplots_adjust(wspace=0.3)
-    fig.colorbar(im_pred, ax=pred, shrink=0.5)
+    pred.set_title("FCN-ALL classification")
+
+    labels = ["AI", "Real"]
+    cbar = fig.colorbar(im_pred, ax=pred, shrink=0.5, location="right")
+    cbar.set_ticks([0, 1])
+    cbar.ax.set_yticklabels(["AI", "Real"])
     plt.show()

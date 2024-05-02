@@ -11,7 +11,7 @@ INPAINT_LEARNING_RATE: float = 0.00001
 DATA_PATH: str = r"C:\GenImage"
 INPAINTING_PATH: str = r"I:\inpainting"
 REDDIT_PATH = r"C:\Users\erwinia\PycharmProjects\redditScrape\reddit-wallpapers\reddit"
-GENERATORS: list[Generator] = [Generator.ALL]
+GENERATORS: list[Generator] = [Generator.SD1_4]
 
 MODEL_NAME: str = "FCN_ALL_5_FINETUNED"
 _BASE_PATH = r"C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model" + "\\"

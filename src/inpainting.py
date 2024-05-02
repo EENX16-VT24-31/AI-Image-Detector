@@ -53,7 +53,7 @@ for image_name in os.listdir(image_dir):
     mask_image = PIL.Image.open(mask_path)
 
     # Perform inpainting
-    output_image = pipe(prompt=prompt, image=image, mask_image=mask_image).images[0]
+    output_image = pipe(prompt=prompt, image=image, mask_image=mask_image).inputs[0]
 
     # Save the output image
     output_path = os.path.join(output_dir, f"inverted-{os.path.splitext(image_name)[0]}{APPENDIX}")

@@ -7,7 +7,7 @@ DATA_PATH = r"C:\GenImage"
 REDDIT_PATH = r"C:\Users\erwinia\PycharmProjects\redditScrape\reddit-wallpapers\reddit"
 INPAINTING_PATH: str = r"I:\inpainting"
 
-MODEL_NAME = "CNN_SD14"
+MODEL_NAME = "CNN_ALL"
 assert MODEL_NAME in ["CNN_SD14", "CNN_ALL"]
 
 GENERATORS = [Generator.ALL]

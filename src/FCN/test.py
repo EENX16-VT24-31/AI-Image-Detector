@@ -8,8 +8,9 @@ from src.FCN.model import FCN_resnet50
 from src.FCN.calibration import platt_scale, get_platt_params
 from src.data import gen_image, reddit
 
-FULL_IMAGE_TEST: bool = True
-USE_REDDIT: bool = False
+FULL_IMAGE_TEST: bool = False
+USE_REDDIT: bool = True
+
 assert [FULL_IMAGE_TEST, USE_REDDIT].count(True) <= 1
 
 if __name__ == "__main__":
@@ -65,7 +66,8 @@ if __name__ == "__main__":
             outputs: torch.Tensor = model(inputs)
 
             full_image_labels: torch.Tensor = labels
-            full_image_prediction = torch.tensor([torch.round(torch.mean(output)) for output in outputs])
+            full_image_prediction = \
+                torch.tensor([torch.round(platt_scale(torch.mean(output), platt_params)) for output in outputs])
 
             labels = labels.view(-1, 1, 1, 1).expand(outputs.size()).float()
             predicted_labels: torch.Tensor = torch.round(platt_scale(outputs, platt_params))
