@@ -195,8 +195,8 @@ def heatmap_b16(image_path: str,
     fig, ax = plt.subplots(figsize=(5, 5))
 
     # Display the original sample with reduced opacity
-    image = np.asarray(image_tensor.cpu()).transpose(1, 2, 0)
-    ax.imshow(image, alpha=0.6)
+    image_arr = np.asarray(image_tensor.cpu()).transpose(1, 2, 0)
+    ax.imshow(image_arr, alpha=0.6)
 
     # Display the attention map with reduced opacity
     attn_heatmap = attn_heatmap_resized.detach().cpu().numpy().squeeze()
