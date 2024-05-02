@@ -5,8 +5,12 @@ EPOCHS: int=3
 IMAGE_COUNT: int | None=None
 WEIGHT_DECAY: float=0.00
 
-LOAD_PATH: str=r'C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model\ViT_ALL_10.pth' # Used to load the saved weights to the modelwhen testing.
-SAVE_PATH: str=r'C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model\Vit'  # OBS! Without '.pth' Used to save each epoch during training.
+LOAD_PATH: str=r'C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model\ViT_ALL_10.pth'
+# Used to load the saved weights to the modelwhen testing.
+
+SAVE_PATH: str=r'C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model\Vit'
+# OBS! Without '.pth' Used to save each epoch during training.
+
 PLATT_PATH: str=r'C:\Users\erwinia\PycharmProjects\AI-Image-Detector\model\platt\ViT_ALL_10.pt'
 
 BASE_PATH: str = r"C:\GenImage"
