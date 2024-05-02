@@ -62,7 +62,7 @@ if __name__ == "__main__":
             )
             image_metric.update(
                 torch.LongTensor([predicted_class.to("cpu").long()]),
-                torch.LongTensor([0])
+                torch.LongTensor([0])  # Define correct label as AI
             )
 
             # Update loss
@@ -87,10 +87,10 @@ if __name__ == "__main__":
 
     print("Full image data:")
     m = image_metric.compute()
-    accuracy: torch.Tensor = m.trace() / m.sum()
-    recall: torch.Tensor = m[0, 0].item() / m[0, :].sum()
-    precision: torch.Tensor = m[0, 0].item() / m[:, 0].sum()
-    F1: torch.Tensor = 2 * precision * recall / (precision + recall)
+    accuracy = m.trace() / m.sum()
+    recall = m[0, 0].item() / m[0, :].sum()
+    precision = m[0, 0].item() / m[:, 0].sum()
+    F1 = 2 * precision * recall / (precision + recall)
 
     print(m)
     print(f"Accuracy: {accuracy.item() * 100}%")

@@ -43,7 +43,6 @@ if __name__ == "__main__":
             gen_image.Datasets(BASE_PATH, generators=GENERATORS, transform=transform)
     else:
         datasets = gen_image.Datasets(BASE_PATH, generators=GENERATORS, image_count=IMAGE_COUNT)
-    device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
     loss_fn = torch.nn.CrossEntropyLoss()
 

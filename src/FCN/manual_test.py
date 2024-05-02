@@ -26,7 +26,7 @@ if __name__ == "__main__":
     model.eval()
 
     # Load image
-    image: Image = None
+    image: Image.Image | None = None
     try:
         image = pil_loader(fileToTest)
     except FileNotFoundError:
