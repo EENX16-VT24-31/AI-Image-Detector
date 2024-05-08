@@ -35,6 +35,7 @@ if __name__ == "__main__":
     loss_fn: torch.nn.MSELoss = torch.nn.MSELoss().to(device)
     test_loss: float = 0.0
     metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
+    image_metric: BinaryConfusionMatrix = BinaryConfusionMatrix()
 
     inputs: torch.Tensor
     labels: torch.Tensor
@@ -52,11 +53,16 @@ if __name__ == "__main__":
             outputs: torch.Tensor = model(inputs)
 
             predicted_labels: torch.Tensor = torch.round(platt_scale(outputs, platt_params))
+            predicted_class: torch.Tensor = torch.round(platt_scale(torch.mean(outputs), platt_params))
 
             # Update BinaryConfusionMatrix
             metric.update(
                 torch.LongTensor(predicted_labels.to("cpu").long()).flatten(),
                 torch.LongTensor(labels.to("cpu").long()).flatten()
+            )
+            image_metric.update(
+                torch.LongTensor([predicted_class.to("cpu").long()]),
+                torch.LongTensor([0])  # Define correct label as AI
             )
 
             # Update loss
@@ -66,11 +72,25 @@ if __name__ == "__main__":
     print(f"Skipped {skipped} images due to memory constraints")
 
     # Print test data
+    print("Pixel data:")
     m = metric.compute()
+
     accuracy: torch.Tensor = m.trace() / m.sum()
     recall: torch.Tensor = m[0, 0].item() / m[0, :].sum()
     precision: torch.Tensor = m[0, 0].item() / m[:, 0].sum()
     F1: torch.Tensor = 2 * precision * recall / (precision + recall)
+
+    print(m)
+    print(f"Accuracy: {accuracy.item() * 100}%")
+    print(f"F1-Score: {F1.item()}")
+    print(test_loss / len(test_set))
+
+    print("Full image data:")
+    m = image_metric.compute()
+    accuracy = m.trace() / m.sum()
+    recall = m[0, 0].item() / m[0, :].sum()
+    precision = m[0, 0].item() / m[:, 0].sum()
+    F1 = 2 * precision * recall / (precision + recall)
 
     print(m)
     print(f"Accuracy: {accuracy.item() * 100}%")
